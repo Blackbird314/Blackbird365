@@ -1,3 +1,3 @@
 hugo --gc --minify
 
-hugo server -D
+hugo server
