@@ -37,7 +37,7 @@
 
 .menu-item {
     .life, .tech, .about {
-        display: none;
+        display: true;
     }
 }
 
@@ -138,7 +138,7 @@ hr.coldplay {
 }
 
 
-// https://github.com/TypeNetwork/Amstelvar
+// https://github.com/TypeNetwork/Amstelvar 诗意的字体
 
 @font-face {
     font-family: 'Amstelvar';
@@ -157,6 +157,26 @@ hr.coldplay {
     font-weight: 100 900;
     font-stretch: 50% 125%;
     font-style: italic;
+}
+
+@font-face {
+    font-family: '仓耳今楷';
+    font-display: swap;
+    src: url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2-variations'),
+         url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 50% 125%;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'LXGWBright';
+    font-display: swap;
+    src: url('#{$baseRelURL}/fonts/LXGWBright.woff2') format('woff2-variations'),
+         url('#{$baseRelURL}/fonts/LXGWBright.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 50% 125%;
+    font-style: normal;
 }
 
 :root {

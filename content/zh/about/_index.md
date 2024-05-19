@@ -5,16 +5,16 @@ date = 2024-05-19T12:30:59+08:00
 
 <!-- <video src="QmZgXJwFNRAyUEuU36jReXtyjESeTWEGZpcJGuWSnbRTf1" poster="../images/viva-la-vida.jpg"></video> -->
 
-<h2 class="viva-la-vida">The Good Night</h2>
+<h2 class="viva-la-vida">Viva La Vida</h2>
 
-<p style="text-align:center"><em>I used to rule the world<br>
+<p style="text-align:center; font-family:'Amstelvar', sans-serif;"><em>I used to rule the world<br>
 Seas would rise when I gave the word<br>
 Now in the morning I sleep alone<br>
 Sweep the streets I used to own</em></p>
 
 ---
 
-你好！欢迎来到**九头鸟**的个人网站！九头鸟的英文就是 Nine phoenix？其实就是「一休儿」的拼音，只不过顺序是..从右往左..🙃… 为什么我要搭建这个博客呢？因为本人喜欢发呆，喜欢胡思乱想，并且发现用文字记录时能够更深入发呆，所以之前用笔记本写了一些东东。但是，我慢慢地发现了笔记本书写的局限性：
+你好！欢迎来到**九头鸟** **Ninephoenix**的个人网站！ 就是九头鸟的英文。为什么叫这个名字？别误会，我不是湖北人，九头鸟来自龙叔的一部电影《十二生肖》，是剧中大反派的绰号。只不过顺序是..从右往左..🙃… 为什么我要搭建这个博客呢？因为本人喜欢发呆，喜欢胡思乱想，并且发现用文字记录时能够更深入发呆，所以之前用笔记本写了一些东东。但是，我慢慢地发现了笔记本书写的局限性：
 
 1. 美观问题，我的字写得~~不太好看~~（难看）
 2. 排版问题，看起来乱糟糟，阅读困难

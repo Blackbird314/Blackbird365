@@ -23,15 +23,15 @@
         
             <copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright>
         
-        <lastBuildDate>Sun, 19 May 2024 16:26:34 &#43;0800</lastBuildDate>
+        <lastBuildDate>Sun, 19 May 2024 21:36:09 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="http://localhost:1313/rss.xml" />
         
         
             <item>
                 <title>Rust 字符串</title>
-                <link>http://localhost:1313/tech/rust-str/</link>
-                <guid isPermaLink="true">http://localhost:1313/tech/rust-str/</guid>
+                <link>http://localhost:1313/tech/rust-slice/</link>
+                <guid isPermaLink="true">http://localhost:1313/tech/rust-slice/</guid>
                 <pubDate>Sun, 19 May 2024 12:38:05 &#43;0800</pubDate>
                 
                     <author>reuixiy@gmail.com (reuixiy)</author>
@@ -39,7 +39,10 @@
                 <copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright>
                 
                     <description>&lt;h2 id=&#34;rust-字符串&#34;&gt;Rust 字符串&lt;/h2&gt;
-</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-rust&#34; data-lang=&#34;rust&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;fn&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
                 
                 
                 
@@ -58,6 +61,14 @@
                 
                 
                     
+                        
+                            
+                                
+                                
+                                
+                                    <category domain="http://localhost:1313/tags/rust/">rust</category>
+                                
+                            
                         
                     
                 
