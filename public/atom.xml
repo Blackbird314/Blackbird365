@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-hans">
     <title type="text">Ninephoenix</title>
     <subtitle type="html">这是一休儿之文术网志！怎么记住 reuixiy 呢？其实就是「一休儿」之拼音，不过方向是自右往左！</subtitle>
-    <updated>2024-05-19T21:36:09&#43;08:00</updated>
+    <updated>2024-05-20T00:15:41&#43;08:00</updated>
     <id>http://localhost:1313/</id>
     <link rel="alternate" type="text/html" href="http://localhost:1313/" />
     <link rel="self" type="application/atom&#43;xml" href="http://localhost:1313/atom.xml" />
@@ -20,7 +20,7 @@
             <title type="text">Rust 字符串</title>
             <link rel="alternate" type="text/html" href="http://localhost:1313/tech/rust-slice/" />
             <id>http://localhost:1313/tech/rust-slice/</id>
-            <updated>2024-05-19T16:35:14&#43;08:00</updated>
+            <updated>2024-05-19T22:32:28&#43;08:00</updated>
             <published>2024-05-19T12:38:05&#43;08:00</published>
             <author>
                     <name>reuixiy</name>
