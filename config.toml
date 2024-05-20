@@ -313,6 +313,11 @@ pageref = "/categories/"
 name = "Categories"
 weight = 4
 pre = "internal"
+[[menu.links]]
+url = "https://ninephoenix.dev/en"
+name = "EN"
+weight = 5
+pre = "external"
 
 
 ##########################################
