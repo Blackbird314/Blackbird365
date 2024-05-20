@@ -315,7 +315,7 @@ weight = 4
 pre = "internal"
 [[menu.links]]
 url = "https://ninephoenix.dev/en"
-name = "EN"
+name = "ENGLISH"
 weight = 5
 pre = "external"
 
