@@ -1,16 +1,18 @@
 +++
-title = 'ABOUT'
+title = 'About Me'
 date = 2024-05-19T12:30:59+08:00
+meta = false
+badge = false
+gitinfo = false
 +++
 
 <!-- <video src="QmZgXJwFNRAyUEuU36jReXtyjESeTWEGZpcJGuWSnbRTf1" poster="../images/viva-la-vida.jpg"></video> -->
 
-<h2 class="viva-la-vida">Viva La Vida</h2>
+<h2 class="viva-la-vida">THAT GOOD NIGHT</h2>
 
-<p style="text-align:center; font-family:'Amstelvar', sans-serif;"><em>I used to rule the world<br>
-Seas would rise when I gave the word<br>
-Now in the morning I sleep alone<br>
-Sweep the streets I used to own</em></p>
+<p style="text-align:center; font-family:'Amstelvar', sans-serif;"><em>Do not go gentle into that good night,<br>
+Old age should burn and rave at close of day;<br>
+Rage, rage against the dying of the light.</em></p>
 
 ---
 

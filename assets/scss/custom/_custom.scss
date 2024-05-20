@@ -7,11 +7,11 @@
 }
 
 .list-title, .term-title, .list-year, .list-month {
-    font-family: 'glyph-correction', 'Cinzel Decorative', 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-family: 'Cinzel Decorative', 'Noto Serif TC', 'Noto Serif SC', serif;
 }
 
 .brand {
-    font-family: 'Lato', sans-serif;
+    font-family: 'TradeWinds-Regular', 'Lato', sans-serif;
     font-weight: bold;
     line-height: 1;
 }
@@ -159,21 +159,41 @@ hr.coldplay {
     font-style: italic;
 }
 
-@font-face {
-    font-family: '仓耳今楷';
-    font-display: swap;
-    src: url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2-variations'),
-         url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2');
-    font-weight: 100 900;
-    font-stretch: 50% 125%;
-    font-style: normal;
-}
+// @font-face {
+//     font-family: '仓耳今楷';
+//     font-display: swap;
+//     src: url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2-variations'),
+//          url('#{$baseRelURL}/fonts/Amstelvar-Roman-VF.woff2') format('woff2');
+//     font-weight: 100 900;
+//     font-stretch: 50% 125%;
+//     font-style: normal;
+// }
 
 @font-face {
     font-family: 'LXGWBright';
     font-display: swap;
     src: url('#{$baseRelURL}/fonts/LXGWBright.woff2') format('woff2-variations'),
          url('#{$baseRelURL}/fonts/LXGWBright.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 50% 125%;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cinzel Decorative';
+    font-display: swap;
+    src: url('#{$baseRelURL}/fonts/CinzelDecorative.woff2') format('woff2-variations'),
+         url('#{$baseRelURL}/fonts/CinzelDecorative.woff2') format('woff2');
+    font-weight: 100 900;
+    font-stretch: 50% 125%;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TradeWinds-Regular';
+    font-display: swap;
+    src: url('#{$baseRelURL}/fonts/TradeWinds-Regular.woff2') format('woff2-variations'),
+         url('#{$baseRelURL}/fonts/TradeWinds-Regular.woff2') format('woff2');
     font-weight: 100 900;
     font-stretch: 50% 125%;
     font-style: normal;
@@ -214,7 +234,7 @@ article:lang(en) .drop-cap {
 }
 
 .post-title {
-    font-family: 'glyph-correction', 'Amstelvar', 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-family: 'Cinzel Decorative', 'glyph-correction', 'Amstelvar', 'Noto Serif TC', 'Noto Serif SC', serif;
     font-variation-settings:
         'wght' 550,
         'opsz' 60,

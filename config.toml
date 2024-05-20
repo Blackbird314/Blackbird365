@@ -287,8 +287,8 @@ name = "Telegram"
 weight = 2
 pre = "external"
 [[menu.socials]]
-url = "https://reuixiy.notion.site/2f10796bae1a4bddb1276a51d3f2118d"
-name = "Others"
+url = "https://twitter.com/Ninephoenix9"
+name = "Twitter"
 weight = 3
 pre = "external"
 
@@ -886,7 +886,7 @@ displayPostDescription = true
 # 文章元信息
 
 # 是否开启（全域性设定）
-enablePostMeta = false
+enablePostMeta = true
 # 说明：文章的 Front Matter 中的 `meta`
 #      的优先顺序高于此处
 
@@ -905,7 +905,7 @@ displayPublishedDate = true
 publishedDateIcon = "calendar-alt"
 
 # 是否显示修改时间
-displayModifiedDate = true
+displayModifiedDate = false
 # 修改时间的图示
 modifiedDateIcon = "calendar-check"
 
@@ -951,7 +951,7 @@ hrefTargetBlank = true
 # 文章目录
 
 # 是否开启（全域性设定）
-enableTOC = true
+enableTOC = false
 # 说明：文章的 Front Matter 中的 `toc`
 #      的优先顺序高于此处
 
@@ -965,6 +965,8 @@ displayTOCNum = true
 
 # 是否连结文章的分节标题到目录
 linkHeadingsToTOC = true
+
+displayTOConSide = true
 
 
 ######################################
@@ -1080,13 +1082,13 @@ customizeScrollbar = false
 #      SVG，则可留空（""）品牌栏字体。
 
 # 品牌栏
-fontFamilySiteBrand = ""
+fontFamilySiteBrand = "TradeWinds-Regular"
 # 选单栏
 fontFamilyMenu = ""
 # 文章标题、文章副标题、列表标题、列表的年份和月份标题、相关文章标题、文章上下篇标题、表格的表头、定义列表中的术语
-fontFamilyTitle = "'Noto Serif SC', 'Noto Serif SC', 'Amstelvar', serif"
+fontFamilyTitle = "'Cinzel Decorative', 'Noto Serif SC', 'Noto Serif TC', 'Amstelvar', serif"
 # 分节标题、目录标题
-fontFamilyHeadings = "'Noto Serif SC', 'Noto Serif SC', 'Amstelvar', serif"
+fontFamilyHeadings = "'Noto Serif SC', 'EB Garamond', serif"
 # 程式码、上标、文章元资讯、文章更新徽章、文章的 Git 版本资讯、极简页尾、不蒜子站点浏览计数
 fontFamilyCode = "'Fira Code Medium', 'Source Code Pro', 'Noto Serif SC', 'Noto Serif SC', monospace"
 # 引用
@@ -1101,7 +1103,8 @@ fontFamilyFooter = "'Source Code Pro', 'Noto Serif SC', 'Noto Serif SC', monospa
 fontFamilyBody = "'LXGWBright', 'Amstelvar', 'Noto Serif SC', 'Noto Serif TC', serif"
 
 # 网络字体链接
-fontsLink = "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel+Decorative:wght@700&display=swap"
+fontsLink = "https://fonts.googleapis.com/css?family=EB+Garamond:400,400i,500,700,700i|Bungee+Shade|Trade+Winds|Cinzel+Decorative:700|Noto+Serif+SC:400,700|Source+Code+Pro:400,400i,700,700i&display=swap&subset=chinese-simplified"
+# fontsLink = "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel+Decorative:wght@700&display=swap"
 # fontsLink = "https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Noto+Serif+TC:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel+Decorative:wght@700&display=swap"
 # 说明：要想读者一定体验到你设定的字体，最好
 #      采用网路字体。MemE 主题目前仅支持
@@ -1229,7 +1232,7 @@ badgeTitlePrefix = "Updated @ "
 enablePostGitInfo = true
 
 # 是否显示（全域性设定）
-displayPostGitInfo = false
+displayPostGitInfo = true
 # 说明：文章的 Front Matter 中的 `gitinfo`
 #      的优先顺序高于此处
 
