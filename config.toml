@@ -291,6 +291,11 @@ url = "https://twitter.com/Ninephoenix9"
 name = "Twitter"
 weight = 3
 pre = "external"
+[[menu.socials]]
+url = "https://www.zhihu.com/people/shu-xue-da-wang-25"
+name = "Zhihu"
+weight = 4
+pre = "external"
 
 ## 连结栏
 [[menu.links]]
@@ -431,7 +436,7 @@ siteLogo = "/static/icons/apple-touch-icon.png"
 # 说明：用于 JSON-LD、Open Graph
 
 # 站点的描述
-siteDescription = "这是九头鸟的个人主页！"
+siteDescription = "这是九头鸟的个人网站！"
 # 说明：用于 HTML 的头部元资料、JSON-LD、
 #      Open Graph、Atom、RSS
 
@@ -951,12 +956,12 @@ hrefTargetBlank = true
 # 文章目录
 
 # 是否开启（全域性设定）
-enableTOC = false
+enableTOC = true
 # 说明：文章的 Front Matter 中的 `toc`
 #      的优先顺序高于此处
 
 # 是否显示目录标题
-displayTOCTitle = true
+displayTOCTitle = false
 
 # 是否显示数字（全域性设定）
 displayTOCNum = true

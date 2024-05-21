@@ -4,9 +4,10 @@ date = 2024-05-19T12:30:59+08:00
 meta = false
 badge = false
 gitinfo = false
+toc = false
 +++
 
-<!-- <video src="QmZgXJwFNRAyUEuU36jReXtyjESeTWEGZpcJGuWSnbRTf1" poster="../images/viva-la-vida.jpg"></video> -->
+<!-- <video src="" poster="/static/images/viva-la-vida.jpg"></video> -->
 
 <h2 class="viva-la-vida">THAT GOOD NIGHT</h2>
 
@@ -16,7 +17,7 @@ Rage, rage against the dying of the light.</em></p>
 
 ---
 
-欢迎来到 ***Ninephoenix*** 的个人网站！我是九头鸟，唯物主义/无神论者，INTP，IOS & MacOS 拥护者，Rustacean。
+欢迎来到 ***Ninephoenix*** 的个人网站！我是九头鸟，唯物主义/无神论者，INTP，IOS & MacOS 拥护者，热衷于开源的 Rustacean。
 
 <!-- 我的技术栈 -->
 
