@@ -35,7 +35,7 @@ let slice: &[i32] = &boxed_array[..];
 
 ## 动态尺寸类型 DST
 
-Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并实现了 trait `Sized`。只有在运行时才知道尺寸的类型称为动态尺寸类型(dynamically sized type)（DST），或者非正式地称为非固定尺寸类型(unsized type)。切片和 [特征对象(trait object)](https://www.zhihu.com/question/581900340/answer/2873592812)是 DSTs 的两个例子。
+Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并实现了 trait `Sized`。只有在运行时才知道尺寸的类型称为动态尺寸类型(dynamically sized type)（DST），或者非正式地称为非固定尺寸类型(unsized type)。切片和[特征对象(trait object)](https://www.zhihu.com/question/581900340/answer/2873592812)是 DSTs 的两个例子。
 
 注意，这里提到的尺寸未知是对类型而言，即 DST(slice, trait object) ..类型的尺寸..无法确定，而非变量值的尺寸。例如，`str` 类型可以是任意长度（只要不超出计算机内存的限制），但具体到一个字符串字面量，其长度是确定无疑且不可更改的。
 
