@@ -1,8 +1,8 @@
 +++
-title = 'Rust 语法辨析：切片、数组和字符串'
-tags = ["rust"]
+title = 'Rust 语法辨析：切片和字符串'
+tags = ["rust", "字符串"]
 date = 2024-05-19T12:38:05+08:00
-slug = "rust-slice-str-array"
+slug = "rust-slice-str"
 +++
 
 ## 何为切片 Slice
@@ -27,7 +27,7 @@ let boxed_array: Box<[i32]> = Box::new([1, 2, 3]);
 let slice: &[i32] = &boxed_array[..];
 ```
 
-虽然 `[T]` 和 `str` 本身都是可变的（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但它被硬编码进二进制程序时，它是只读/不可变的，这时 Rust 编译器就只允许我们使用它的不可变引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 类型就不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
+虽然 `[T]` 和 `str` 本身都是可变的（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但某些情况下是只读/不可变的，这时 Rust 编译器只允许我们使用它的不可变引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它被硬编码进二进制程序，在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 类型就不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
 
 切片的所有元素总是初始化过的，使用 Rust 中的安全(safe)方法或操作符来访问切片时总是会做越界检查。
 
@@ -43,13 +43,9 @@ Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并
 
 固定尺寸类型的引用只需要指向该类型内存对象的第一个字节，不需要知道内存对象的尺寸，因为 Rust 在编译时会生成包含类型信息的机器码，对每个固定尺寸类型的数据，Rust 都能知道其类型，从而确定大小。但对于动态尺寸类型，即使知道内存对象的类型，也无法确定应该引用的内存范围，因而必须使用宽指针。
 
-## String 字符串
+## `String` 字符串
 
 如前所述，Rust `str` 是符合 `UTF-8` 规范的一串 `[u8]` 数据，同理 `String` 类型是基于 `Vec<u8>` 的封装，二者堆内存分配策略一致：`2->4->8`，如果容量不够，下次申请的为前一次的 2 倍。
-
-`String` 类型是存储在栈上的宽指针，包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向的的 `str` 是堆上数据，所以运行过程中它的长度可以动态改变。
-
-![alt text](/static/images/str-pointer.png)
 
 `String` 类型在标准库中的定义：
 
@@ -59,12 +55,25 @@ pub struct String {
 }
 ```
 
-可以看出，`String` 类型定义中的 `vec` 字段是私有的。这意味着我们不能直接创建字符串实例，只能通过封装的方法来创建。之所以保持私有，是因为并非所有 `[u8]` 字节流都符合 `UTF-8` 标准，与底层 `u8` 字节的直接交互可能会破坏数据。通过这种受控访问，编译器可以确保 `String` 数据始终有效。这是两种创建字符的方式：
+可以看出，`String` 类型定义中的 `vec` 字段是私有的。这意味着我们不能直接创建字符串实例，只能通过封装的方法来创建。之所以保持私有，是因为并非所有 `[u8]` 字节流都符合 `UTF-8` 标准，与底层 `u8` 字节的直接交互可能会破坏数据。通过这种受控访问，编译器可以确保 `String` 数据始终有效。以下是两种初始化 `String` 的方式：
 
 ```Rust
-let hello = "Hello World!";
-let s1 = String::from(hello);
-let s2 = hello.to_string();
+let hello_world: &str = "hello world"; // hello_world 指向制度数据区
+let s: String = String::from(hello);
+let s: String = hello.to_string(); // 发生了变量遮蔽
+let world: &str = &s[6..] // world 指向堆
 ```
 
-![alt text](/static/images/rust-str-model.webp)
+`String` 类型是一个存储在栈上的宽指针，包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向的的 `str` 是堆上数据，所以运行过程中它的长度可以动态改变。
+
+![alt text](/images/str-pointer.png "s 是 String 类型，world 是 &str 类型")
+
+## `Box<str>` 字符串
+
+## 总结
+
+一图以蔽之，Rust 字符串内存模型如下：
+
+![alt text](/images/rust-str-model.webp)
+
+![xxx](images/2024-05-22-17-17-53.png)
