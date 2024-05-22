@@ -59,8 +59,10 @@ pub struct String {
 
 ```Rust
 let hello_world: &str = "hello world"; // hello_world 指向制度数据区
+
 let s: String = String::from(hello);
 let s: String = hello.to_string(); // 发生了变量遮蔽
+
 let world: &str = &s[6..] // world 指向堆
 ```
 
@@ -70,10 +72,23 @@ let world: &str = &s[6..] // world 指向堆
 
 ## `Box<str>` 字符串
 
+`Box<str>` 类型是 `Box<[T]>` 的子集，如前所述，它是一个智能指针/宽指针，将 `str` 放在堆上。不同于 `&str` `&mut str`，`Box<str>` 拥有内存对象的所有权。相比 `String` 类型，`Box<str>` 缺少 `capacity` 字段，这意味着无法修改 `Box<str>` 中 `str` 的长度，只能改变 `str` 中每个字符的值。
+
 ## 总结
+
+`[T]` `str` 类型数据可以存储在以下三种位置：
+
+- 只读数据区：绑定的字符串字面量 `"hello"` 直接被硬编码进二进制程序中，运行时载入内存的只读数据区
+- Heap 堆：`Box<T>` `String` 类型
+- Stack 栈：对于分配到栈上的字节数组，可以将其转换为 `&str` 类型的字符串，这时的 `str` 存储在栈上：
+
+```Rust
+use std::str;
+
+let x: &[u8] = &[b'a', b'b', b'c'];
+let stack_str: &str = str::from_utf8(x).unwrap();
+```
 
 一图以蔽之，Rust 字符串内存模型如下：
 
 ![alt text](/images/rust-str-model.webp)
-
-![xxx](images/2024-05-22-17-17-53.png)
