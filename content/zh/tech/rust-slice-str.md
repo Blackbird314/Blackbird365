@@ -45,7 +45,7 @@ Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并
 
 ## `String` 字符串
 
-如前所述，Rust `str` 是符合 `UTF-8` 规范的一串 `[u8]` 数据，同理 `String` 类型是基于 `Vec<u8>` 的封装，二者堆内存分配策略一致：`2->4->8`，如果容量不够，下次申请的为前一次的 2 倍。
+如前所述，Rust `str` 是符合 `UTF-8` 规范的一串 `[u8]` 数据，同理 `String` 类型是基于 `Vec<u8>` 的封装，二者堆内存分配策略一致：`2->4->8`，如果容量不够，下次申请的为前一次的 2 倍。和 `Vec<u8>` 一样，`String` 类型变量的内存对象存储在堆上，且拥有它的所有权。
 
 `String` 类型在标准库中的定义：
 
@@ -58,7 +58,7 @@ pub struct String {
 可以看出，`String` 类型定义中的 `vec` 字段是私有的。这意味着我们不能直接创建字符串实例，只能通过封装的方法来创建。之所以保持私有，是因为并非所有 `[u8]` 字节流都符合 `UTF-8` 标准，与底层 `u8` 字节的直接交互可能会破坏数据。通过这种受控访问，编译器可以确保 `String` 数据始终有效。以下是两种初始化 `String` 的方式：
 
 ```Rust
-let hello_world: &str = "hello world"; // hello_world 指向制度数据区
+let hello_world: &str = "hello world"; // hello_world 指向只读数据区
 
 let s: String = String::from(hello);
 let s: String = hello.to_string(); // 发生了变量遮蔽
@@ -66,7 +66,16 @@ let s: String = hello.to_string(); // 发生了变量遮蔽
 let world: &str = &s[6..] // world 指向堆
 ```
 
-`String` 类型是一个存储在栈上的宽指针，包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向的的 `str` 是堆上数据，所以运行过程中它的长度可以动态改变。
+显然，`&str` 类型可以指向堆，也可以指向只读数据区，还可以指向栈：只需将分配到栈上的字节数组转换为 `&str` 类型，这时 `str` 自然是栈上的内存对象：
+
+```Rust
+use std::str;
+
+let x: &[u8] = &[b'a', b'b', b'c'];
+let stack_str: &str = str::from_utf8(x).unwrap();
+```
+
+作为存储在栈上的宽指针，`String` 类型包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向堆内存，所以运行过程中它的长度可以动态改变。
 
 ![alt text](/images/str-pointer.png "s 是 String 类型，world 是 &str 类型")
 
@@ -78,16 +87,9 @@ let world: &str = &s[6..] // world 指向堆
 
 `[T]` `str` 类型数据可以存储在以下三种位置：
 
-- 只读数据区：绑定的字符串字面量 `"hello"` 直接被硬编码进二进制程序中，运行时载入内存的只读数据区
 - Heap 堆：`Box<T>` `String` 类型
-- Stack 栈：对于分配到栈上的字节数组，可以将其转换为 `&str` 类型的字符串，这时的 `str` 存储在栈上：
-
-```Rust
-use std::str;
-
-let x: &[u8] = &[b'a', b'b', b'c'];
-let stack_str: &str = str::from_utf8(x).unwrap();
-```
+- Stack 栈：如前所述
+- 只读数据区：绑定的字符串字面量 `"hello"` 直接被硬编码进二进制程序中，运行时载入内存的只读数据区
 
 一图以蔽之，Rust 字符串内存模型如下：
 
