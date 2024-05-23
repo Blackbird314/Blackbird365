@@ -104,7 +104,7 @@ name = "Ninephoenix"
 # 邮箱
 email = "sirius.su128@gmail.com"
 # 座右铭或简介
-motto = "Do not go gentle into that good night"
+motto = "Done is better than perfect."
 # 头像
 avatar = "/static/icons/apple-touch-icon.png"
 # 网站（预设值：baseURL）
