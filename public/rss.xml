@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.125.7 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Fri, 24 May 2024 17:22:29 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 核心语法：所有权与借用</title><link>https://ninephoenix.dev/tech/rust-ownership/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-ownership/</guid><pubDate>Tue, 21 May 2024 18:19:51 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引言">引言&lt;/h2>
+<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.125.7 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Fri, 24 May 2024 17:26:47 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 核心语法：所有权与借用</title><link>https://ninephoenix.dev/tech/rust-ownership/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-ownership/</guid><pubDate>Tue, 21 May 2024 18:19:51 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引言">引言&lt;/h2>
 &lt;p>所有编程语言都无法回避的一个问题是内存管理，理想中的编程语言应该有以下两个特点：&lt;/p>
 &lt;ul>
 &lt;li>内存对象能在正确的时机及时释放，这使我们能控制程序的内存消耗&lt;/li>
@@ -15,9 +15,8 @@
 &lt;ol>
 &lt;li>Stack（栈）
 &lt;ul>
-&lt;li>栈用于存储函数参数和局部变量&lt;/li>
+&lt;li>栈用于存储函数参数和局部变量，内存对象的数据类型及其大小必须已知&lt;/li>
 &lt;li>栈内存分配是连续的，操作系统对栈内存大小有所限制，因此你无法创建过长的数组&lt;/li>
-&lt;li>栈内存对象的数据类型及其大小必须已知&lt;/li>
 &lt;li>栈内存的分配效率要高于堆内存&lt;/li>
 &lt;/ul>
 &lt;/li>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-hans"><title type="text">Ninephoenix</title><subtitle type="html">这是九头鸟的个人网站！</subtitle><updated>2024-05-24T17:22:29+08:00</updated><id>https://ninephoenix.dev/</id><link rel="alternate" type="text/html" href="https://ninephoenix.dev/"/><link rel="self" type="application/atom+xml" href="https://ninephoenix.dev/atom.xml"/><author><name>Ninephoenix</name><uri>https://ninephoenix.dev/</uri><email>sirius.su128@gmail.com</email></author><rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><generator uri="https://gohugo.io/" version="0.125.7">Hugo</generator><entry><title type="text">Rust 核心语法：所有权与借用</title><link rel="alternate" type="text/html" href="https://ninephoenix.dev/tech/rust-ownership/"/><id>https://ninephoenix.dev/tech/rust-ownership/</id><updated>2024-05-24T17:22:18+08:00</updated><published>2024-05-21T18:19:51+08:00</published><author><name>Ninephoenix</name><uri>https://ninephoenix.dev/</uri><email>sirius.su128@gmail.com</email></author><rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html">但是，古尔丹，代价是什么呢？</summary><content type="html">&lt;h2 id="引言">引言&lt;/h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-hans"><title type="text">Ninephoenix</title><subtitle type="html">这是九头鸟的个人网站！</subtitle><updated>2024-05-24T17:26:47+08:00</updated><id>https://ninephoenix.dev/</id><link rel="alternate" type="text/html" href="https://ninephoenix.dev/"/><link rel="self" type="application/atom+xml" href="https://ninephoenix.dev/atom.xml"/><author><name>Ninephoenix</name><uri>https://ninephoenix.dev/</uri><email>sirius.su128@gmail.com</email></author><rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><generator uri="https://gohugo.io/" version="0.125.7">Hugo</generator><entry><title type="text">Rust 核心语法：所有权与借用</title><link rel="alternate" type="text/html" href="https://ninephoenix.dev/tech/rust-ownership/"/><id>https://ninephoenix.dev/tech/rust-ownership/</id><updated>2024-05-24T17:26:33+08:00</updated><published>2024-05-21T18:19:51+08:00</published><author><name>Ninephoenix</name><uri>https://ninephoenix.dev/</uri><email>sirius.su128@gmail.com</email></author><rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html">但是，古尔丹，代价是什么呢？</summary><content type="html">&lt;h2 id="引言">引言&lt;/h2>
 &lt;p>所有编程语言都无法回避的一个问题是内存管理，理想中的编程语言应该有以下两个特点：&lt;/p>
 &lt;ul>
 &lt;li>内存对象能在正确的时机及时释放，这使我们能控制程序的内存消耗&lt;/li>
@@ -15,9 +15,8 @@
 &lt;ol>
 &lt;li>Stack（栈）
 &lt;ul>
-&lt;li>栈用于存储函数参数和局部变量&lt;/li>
+&lt;li>栈用于存储函数参数和局部变量，内存对象的数据类型及其大小必须已知&lt;/li>
 &lt;li>栈内存分配是连续的，操作系统对栈内存大小有所限制，因此你无法创建过长的数组&lt;/li>
-&lt;li>栈内存对象的数据类型及其大小必须已知&lt;/li>
 &lt;li>栈内存的分配效率要高于堆内存&lt;/li>
 &lt;/ul>
 &lt;/li>
