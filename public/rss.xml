@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.125.7 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Fri, 24 May 2024 22:07:26 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 核心语法：生命周期与借用检查</title><link>https://ninephoenix.dev/tech/rust-lifetimes/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-lifetimes/</guid><pubDate>Fri, 24 May 2024 17:37:27 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description/><category domain="https://ninephoenix.dev/tech/">tech\</category></item><item><title>Rust 核心语法：所有权与借用</title><link>https://ninephoenix.dev/tech/rust-ownership/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-ownership/</guid><pubDate>Tue, 21 May 2024 18:19:51 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引言">引言&lt;/h2>
+<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.125.7 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Fri, 24 May 2024 22:42:49 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 核心语法：生命周期与借用检查</title><link>https://ninephoenix.dev/tech/rust-lifetimes/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-lifetimes/</guid><pubDate>Fri, 24 May 2024 17:37:27 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description/><category domain="https://ninephoenix.dev/tech/">tech\</category></item><item><title>Rust 核心语法：所有权与借用</title><link>https://ninephoenix.dev/tech/rust-ownership/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-ownership/</guid><pubDate>Tue, 21 May 2024 18:19:51 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引言">引言&lt;/h2>
 &lt;p>所有编程语言都无法回避的一个问题是内存管理，理想中的编程语言应该有以下两个特点：&lt;/p>
 &lt;ul>
 &lt;li>内存对象能在正确的时机及时释放，这使我们能控制程序的内存消耗&lt;/li>
 &lt;li>在内存对象被释放后，不应该继续使用指向它的指针，这会导致崩溃和安全漏洞&lt;/li>
 &lt;/ul>
 &lt;p>由此诞生出两大阵营：1)以 C/C++/Zig 为代表，手动管理内存的申请和释放，但避免内存泄漏和悬空指针是程序员的责任。2)依靠垃圾回收机制(Garbage Collection)自动管理，在所有指向内存对象的指针都消失后，自动释放对应内存。但这会严重影响程序性能，几乎所有现代编程语言，从 Java/Python/Haskell 到 Go/Javascript 都在此列。&lt;/p>
-&lt;p>为了同时兼顾安全与性能，Rust 选择了第三种方式：由编译器管理内存，即编译时就决定何时释放内存，并将相关指令在恰当位置写入可执行程序。这种方式可以理解为编译期 GC，这不会带来任何运行时开销，也可以保证内存安全和并发安全（虽然 Rust 无法完全避免内存泄漏，但至少大大降低了它发生的概率，这是后话）。&lt;/p>
+&lt;p>为了同时兼顾安全与性能，Rust 选择了第三种方式：由编译器管理内存（编译期 GC），即编译时就决定何时释放内存，并将相关指令在恰当位置写入可执行程序。这种方式不会带来任何运行时开销，也可以保证内存安全和并发安全（虽然 Rust 无法完全避免内存泄漏，但至少大大降低了它发生的概率，这是后话）。&lt;/p>
 &lt;p>为了满足要求，Rust 语言提出了两个核心概念，即所有权(Ownership)和生命周期(Lifetimes)。这两大概念本质是对语法的一种限制，目的是在混沌中建立足够的秩序，以便让 Rust 在编译期有能力验证程序是否安全。所有权系统解决了内存释放以及二次释放的问题，生命周期系统则解决了悬垂指针问题。&lt;/p>
 &lt;p>当然，在工程领域，..一切选择皆是权衡..。Rust 不是完美的等边三角，兼顾了安全和性能，则必然要付出一些代价，包括更长的编译时间、更高的心智负担，还有最要命的语法限制——你很难用 safe rust 写出一个双向链表，更遑论红黑树这种复杂结构。但这并非不可接受，因为手写这些数据结构的机会并不多，你可以用标准库代替，也可以在 unsafe 中封装这些“不安全”的结构。记住，..unsafe.. 不是 ..nosafe..，只是将安全保证由编译器交到程序员手中，它与 C/C++ 没什么区别，甚至还更安全和现代一点。&lt;/p>
 &lt;h2 id="rust-内存模型">Rust 内存模型&lt;/h2>
@@ -70,7 +70,7 @@
 &lt;p>切记，所有权是一个编译器抽象的概念，它不存在于实际的代码中，仅仅是一种思想和规则。&lt;/p>
 &lt;h2 id="所有权转移">所有权转移&lt;/h2>
 &lt;p>其他语言往往有深拷贝和浅拷贝两个概念，浅拷贝是只拷贝数据对象的引用，深拷贝是根据引用递归到最终的数据并拷贝数据。&lt;/p>
-&lt;p>Rust 为了适应所有权系统，没有使用深浅拷贝的概念，而是提出了移动(move)、拷贝(copy)和克隆(clone)的区别。&lt;/p>
+&lt;p>Rust 为了适应所有权系统，没有使用深浅拷贝的概念，而是提出了移动(Move)、拷贝(Copy)和克隆(Clone)的区别。&lt;/p>
 &lt;h3 id="move-语义">Move 语义&lt;/h3>
 &lt;p>考虑以下代码：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-Rust" data-lang="Rust">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">mut&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">s1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nb">String&lt;/span>::&lt;span class="n">from&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;big str&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
@@ -83,7 +83,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// &amp;#34;big str&amp;#34; 被自动释放，为 &amp;#34;new str&amp;#34; 分配新的堆内存
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="n">s1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nb">String&lt;/span>::&lt;span class="n">from&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;new str&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>将 &lt;code>s1&lt;/code> 赋值给 &lt;code>s2&lt;/code> 会发生什么？如果将 &lt;code>s1&lt;/code> 宽指针复制一份给 &lt;code>s2&lt;/code>，那么按照所有权规则，&lt;code>s1&lt;/code> &lt;code>s2&lt;/code> 离开作用域后自动销毁堆中对应数据，会导致内存二次释放，这不仅危险且毫无必要；如果拷贝一份 &lt;code>s1&lt;/code> 指向的堆内存交给 &lt;code>s2&lt;/code>，这又违背了 Rust 性能优先的原则。&lt;/p>
-&lt;p>实际上，这时候 Rust 会进行所有权转移(Move)：直接让 &lt;code>s1&lt;/code> 无效（&lt;code>s1&lt;/code> 仍然存在，..只是变成未初始化的变量..，只要 &lt;code>s1&lt;/code> 是 mutable 的，你还可以重新为其初始化），同时将 &lt;code>s1&lt;/code> 栈内存对象复制一份给 &lt;code>s2&lt;/code>，这样 &lt;code>s2&lt;/code> 就指向了同一个堆内存对象，也就是将 &lt;code>s1&lt;/code> 的所有权移动到 &lt;code>s2&lt;/code> 手中，如图所示：&lt;/p>
+&lt;p>实际上，这时候 Rust 会进行所有权转移(Move)：直接让 &lt;code>s1&lt;/code> 无效（&lt;code>s1&lt;/code> 仍然存在，..只是变成未初始化的变量..，只要 &lt;code>s1&lt;/code> 是可变的，你还可以重新为其初始化），同时将 &lt;code>s1&lt;/code> 栈内存对象复制一份给 &lt;code>s2&lt;/code>，这样 &lt;code>s2&lt;/code> 就指向了同一个堆内存对象，也就是将 &lt;code>s1&lt;/code> 的所有权移动到 &lt;code>s2&lt;/code> 手中，如图所示：&lt;/p>
 &lt;p>&lt;img alt="2024-05-23-20-48-24.png" src="https://ninephoenix.dev/images/2024-05-23-20-48-24.png">&lt;/p>
 &lt;p>因为声明的 &lt;code>s2&lt;/code> 是不可变变量，你不能通过它修改字符串值，但编译期的 &lt;code>mut&lt;/code> 标识是作用在变量名上，而不是那个内存对象。因此下面的例子中 &lt;code>s1&lt;/code> 是不可变的，并不妨碍我们定义另外一个可变的变量名 &lt;code>s3&lt;/code> 来写这块内存：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-Rust" data-lang="Rust">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// s1 s2 不可变 s3 可变
@@ -126,7 +126,7 @@
 &lt;li>布尔类型&lt;/li>
 &lt;li>字符类型&lt;/li>
 &lt;li>元组，当且仅当其包含的类型也都实现 &lt;code>Copy&lt;/code> 的时候。比如 &lt;code>(i32, i32)&lt;/code> 是 &lt;code>Copy&lt;/code> 的，但 &lt;code>(i32, String)&lt;/code> 不是&lt;/li>
-&lt;li>共享指针类型 &lt;code>*const T&lt;/code> 或共享引用类型 &lt;code>&amp;amp;T&lt;/code>（无论 T 是否实现 Copy）&lt;/li>
+&lt;li>共享指针类型 &lt;code>*const T&lt;/code> 或共享引用类型 &lt;code>&amp;amp;T&lt;/code>（无论 T 是否实现 &lt;code>Copy&lt;/code>）&lt;/li>
 &lt;/ul>
 &lt;p>对于那些没有实现 &lt;code>Copy&lt;/code> Trait 的自定义类型，可以通过 &lt;code>#[derive]&lt;/code> 手动派生实现(要求同时实现 &lt;code>Clone&lt;/code> Trait)，方式很简单：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-Rust" data-lang="Rust">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#[derive(Copy, Clone)]&lt;/span>&lt;span class="w">
@@ -198,7 +198,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">r&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="c1">// 报错 borrow of moved value: `r`
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解引用">解引用&lt;/h2>
-&lt;p>解引用操作 &lt;code>*r&lt;/code> 会得到一个被称为影子变量的东西，可以理解为没有所有权的变量别名。它可以用来对本体变量的内存对象进行读写操作，但无法通过影子变量进行所有权转移(Move)，这会影响本体对于内存对象的掌控：&lt;/p>
+&lt;p>解引用操作 &lt;code>*r&lt;/code> 会得到一个被称为影子变量的东西，可以理解为没有所有权的变量别名。它可以用来对本体变量的内存对象进行读写操作，但无法通过影子变量进行所有权转移，这会影响本体对于内存对象的掌控：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-Rust" data-lang="Rust">&lt;span class="line">&lt;span class="cl">&lt;span class="k">struct&lt;/span> &lt;span class="nc">MyType&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">val&lt;/span>: &lt;span class="nc">T&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
