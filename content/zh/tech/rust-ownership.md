@@ -127,7 +127,7 @@ Move 语义不仅出现在变量赋值过程中，在函数传参、函数返回
 
 ### Copy 语义
 
-你可能会想，如果每次赋值都要令原变量失效，是否太麻烦了？为此，Rust 提出了 Copy 语义，和 Move 语义的唯一区别是，Copy 后..原变量仍然可用..。换言之，Copy 等同于浅拷贝，会对栈内存做按位复制，而不对任何堆内存负责，原变量和新变量各自绑定独立的值，..并拥有其所有权..。显然，如果变量指向了堆内存对象，Copy 语义会导致二次释放的错误，因此 Rust 默认使用 Move 语义，只有实现了 `Copy` Trait 的类型在所有权转移时 Copy。
+你可能会想，如果每次赋值都要令原变量失效，是否太麻烦了？为此，Rust 提出了 Copy 语义，和 Move 语义的唯一区别是，Copy 后..原变量仍然可用..。换言之，Copy 等同于“浅拷贝”，会对栈内存做按位复制，而不对任何堆内存负责，原变量和新变量各自绑定独立的栈内存，..并拥有其所有权..。显然，如果变量指向了堆内存对象，Copy 语义会导致二次释放的错误，因此 Rust 默认使用 Move 语义，只有实现了 `Copy` Trait 的类型在所有权转移时 Copy。
 
 例如，标准库的 `i32` 类型就默认已经实现了 `Copy` Trait，因此它在进行所有权转移的时候，会自动使用 Copy 而非 Move 语义，赋值后原变量仍可用。
 
@@ -161,27 +161,40 @@ impl Clone for MyStruct {
 }
 ```
 
+注意，只有当某类型的所有成员都实现了 `Copy`，该类型才能够实现 `Copy`。“成员(member)”的含义取决于类型，例如：结构体的字段、枚举的变量、数组的元素、元组的项，等等。
+
 Rust 标准库文档提到[^2]，一般来说，如果你的类型可以实现 `Copy`，它就应该实现。但实现 `Copy` 是你的类型公共 API 的一部分。如果该类型可能在未来变成非 `Copy`，那么现在省略 `Copy` 的实现可能会是明智的选择，以避免 API 的破坏性改变。
 
 那么哪些类型不能实现 `Copy` 呢？任何自身或部分实现了 `Drop` Trait 的类型都不可实现 `Copy`，比如 `String` 和 `Vec<>` 类型。除此之外，Copy 一个可变引用 `&mut T` 也是不安全的。
 
 ### Clone 语义
 
-看见上面的 `Clone` Trait 了吗？它是 `Copy` 的 Supertrait，也就是说，实现 `Copy` 的类型必须先实现 `Clone`，看看 `Copy` Trait 的定义：
+看见上面的 `Clone` Trait 了吗？它是 `Copy` 的 Supertrait，看看 `Copy` Trait 的定义：
 
 ```Rust
 pub trait Copy: Clone { }
 ```
 
-搜索
+也就是说，实现 `Copy` 的类型 `T` 必须先实现 `Clone`，如果一个类型是 `Copy` 的，那么它的 `Clone` 实现只需要返回 `*self`（参见上述例子）。实现 `Clone` 的类型变量可以调用 `clone()` 方法手动拷贝内存对象，它对复本的整体有效性负责，所以【栈】与【堆】都是 `clone()` 的复制目标，这相当于“深拷贝”。
 
----
+```Rust
+let s1 = String::from("big str");
+// 克隆s1，克隆之后，变量s1 仍然绑定原始数据
+let s2 = s1.clone();
+println!("{},{}", s1, s2);
+```
 
-总结一下，Move 语义等于浅拷贝 + 原变量失效，移动所有权和栈内存；Copy 只进行浅拷贝，复制所有权和栈内存；Clone 必须显式调用，复制栈内存、堆内存和所有权。
+`Copy` 的细节被封装在编译器内，无法自行定制和实现，不可重载；而 Clone 可由开发者自行实现。所以用 `Clone` 的默认实现时，操作的性能是较低的。但你可以实现自己的克隆逻辑，也不一定总是会效率低。比如 `Rc`，它的 `clone()` 用于增加引用计数，同时只拷贝少量数据，效率并不低。
+
+另外，`Copy` 行为在 1)赋值 2)参数传入 3)返回值传出时被隐式触发，而 `Clone` 行为必须显示调用 `Clone::clone(&self)` 成员方法。
+
+## 总结
+
+总结一下，Move 语义等于“浅拷贝” + 原变量失效，移动所有权和栈内存；Copy 只进行“浅拷贝”，复制所有权和栈内存；Clone 必须显式调用，进行“深拷贝”，复制栈内存、堆内存和所有权。
 
 ## 引用
 
 ---
 
 [^1]: 参考：<https://stackoverflow.com/questions/30288782/what-are-move-semantics-in-rust>
-[^2]: <https://doc.rust-lang.org/std/marker/trait.Copy.html#when-should-my-type-be-copy>
+[^2]: 参考：<https://doc.rust-lang.org/std/marker/trait.Copy.html#when-should-my-type-be-copy>
