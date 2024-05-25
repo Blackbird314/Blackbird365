@@ -234,6 +234,7 @@ body {
 
 html:lang(en) body {
     font-variation-settings: normal;
+    font-family: 'LXGWBright', 'Amstelvar', 'Noto Serif TC', 'Noto Serif SC', serif;
 }
 
 article:lang(en) p {
@@ -242,7 +243,7 @@ article:lang(en) p {
 
     font-size: var(--font-size);
     line-height: var(--line-height);
-    font-family: 'Amstelvar', 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-family: 'LXGWBright', 'Amstelvar', 'Noto Serif TC', 'Noto Serif SC', serif;
     font-variation-settings: normal;
 }
 
