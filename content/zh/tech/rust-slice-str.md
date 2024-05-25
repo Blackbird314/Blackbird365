@@ -7,7 +7,7 @@ slug = "rust-slice"
 
 ## 何为切片 Slice
 
-Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*，是一种[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，`str` 类型本质上就是符合 `UTF-8` 编码的 `[u8]` 类型，它就是字符串切片。
+Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，也是一种[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，`str` 类型本质上就是符合 `UTF-8` 编码的 `[u8]` 类型，它就是字符串切片。
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
@@ -106,3 +106,7 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 一图以蔽之，Rust 字符串内存模型如下：
 
 ![alt text](/images/rust-str-model.webp)
+
+---
+
+[^1]: 参考：<https://doc.rust-lang.org/beta/std/index.html#primitives>
