@@ -204,7 +204,7 @@ pub trait Drop {
 
 但是在某些情况下，这是有用的，例如对于直接管理资源的类型。这个资源可能是内存，也可能是文件描述符，也可能是网络套接字。一旦不再使用该类型的值，它应该通过释放内存或关闭文件或套接字来“清理”其资源。这就是 destructor 的工作，因此也就是 `Drop::drop` 的职责。
 
-除此之外，`Copy` 一个可变引用 `&mut T` 也是不安全的，下文会提到，这违背了引用的借用规则。
+除此之外，`Copy` 一个可变引用 `&mut T` 也是不安全的，这违背了引用的借用规则。
 
 ### Clone 语义
 
@@ -316,6 +316,34 @@ fn main() {
 }
 ```
 
+上文提到，共享引用实现了 `Copy`，自然也实现了 `Clone`，而下面的结构体 `Person` 没有实现 `Clone`，因此 `b.clone()` 只能复制引用 `b`，不能复制引用指向的内存对象。虽然这能通过编译，但 clippy 不建议我们这样做，因为它的行为相当于 `Copy` 操作，和单纯的赋值 `c = b` 没差别。
+
+```Rust
+struct Person;
+
+let a = Person;
+let b = &a;
+let c = b.clone();  // c 的类型是 &Person
+```
+
+但如果为结构体 `Person` 实现 `Clone`，再去 `clone()` 引用类型，将没有错误提示：
+
+```Rust
+#[derive(Clone)]
+struct Person;
+
+let a = Person;
+let b = &a;
+let c = b.clone();  // c 的类型是 Person，而不是 &Person
+```
+
+前后两个示例的区别，仅在于引用所指向的类型 `Person` 有没有实现 `Clone`。所以得出结论：
+
+- 没有实现 `Clone` 时，引用类型的 `clone()` 将等价于 `Copy`，但 cilppy 工具会报错，说这可能不是我们想要的克隆效果
+- 实现了 `Clone` 时，引用类型的 `clone()` 将克隆并得到引用所指向的类型
+
+这是因为，方法调用时会先查找与调用者类型匹配的方法，查找过程具有优先级，找到即停。由于 `.` 操作会进行自动解引用，解引用前后是两种类型(解引用前是引用类型，解引用后是引用指向的类型)，如果这两种类型都实现了同一个方法(如 `clone()`)，Rust 编译器将按照方法的查找规则来决定调用哪个类型上的方法。[^3]
+
 ## 所有权树
 
 Rust 每个拥有所有权的容器类型(tuple/array/vec/struct/enum等)变量和它的成员（以及成员的成员），会形成一棵所有权树。任何一个成员（假设叫 `A`）离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 `Move` 给新变量。
@@ -347,3 +375,4 @@ fn main() {
 
 [^1]: 参考：<https://stackoverflow.com/questions/30288782/what-are-move-semantics-in-rust>
 [^2]: 参考：<https://doc.rust-lang.org/std/marker/trait.Copy.html#when-should-my-type-be-copy>
+[^3]: 参考：<https://rustc-dev-guide.rust-lang.org/method-lookup.html?highlight=lookup#method-lookup>
