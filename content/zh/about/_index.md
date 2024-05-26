@@ -27,4 +27,4 @@ Rage, rage against the dying of the light.</em></p>
 
 如果你在浏览博客的过程中发现了任何问题（如错别字），欢迎前往 GitHub 提交 [Issue](https://github.com/reuixiy/io-oi.me/issues) 或直接修改相关文件后提交 PR。如果你有事想要联系 Ninephoenix，可以通过邮件，邮箱地址：[sirius.su128@gmail.com](mailto:sirius.su128@gmail.com)。
 
-另，博客使用 [Notion](_) 持续写作，博客自豪地由 [Hugo](https://gohugo.io/) 驱动，主题是 [MemE](https://github.com/reuixiy/hugo-theme-meme)，源码在 [GitHub](https://github.com/Ninephoenix9/Ninephoenix9.github.io) 上，生成的网页由 [Github Pages](https://github.com/Ninephoenix9/Ninephoenix9.github.io/settings/pages) 托管，目前通过 [GitHub Actions](https://github.com/Ninephoenix9/Ninephoenix9.github.io/actions) 实现自动化部署。
+另，博客使用 [Notion](_) 持续写作，博客自豪地由 [Hugo](https://gohugo.io/) 驱动，主题是 [MemE](https://github.com/reuixiy/hugo-theme-meme)，源码在 [GitHub](https://github.com/Ninephoenix9/Ninephoenix9.github.io) 上，生成的网页通过 [Vercel](https://vercel.com/) 自动化部署。
