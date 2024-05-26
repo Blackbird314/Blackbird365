@@ -1,4 +1,4 @@
-hugo --gc --minify
+# hugo --gc --minify
 
 git add -A
 
