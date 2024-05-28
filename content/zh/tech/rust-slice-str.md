@@ -11,7 +11,7 @@ Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
-Slice 类型非常特殊，在代码层面，它并不真的存在。换言之，你不能在代码中声明一个 `[T]` 或 `str` 类型的变量并拥有内存对象的所有权。以 `str` 为例，它只能以 `&str` `&mut str` `Box<str>` `String` 等形式呈现，前两者是对 `str` 的引用，后两者包含了指向 `str` 的指针。
+Slice 类型非常特殊，你不能在代码中声明一个 `[T]` 或 `str` 类型的变量。换言之，任何变量不能拥有 `[T]` 或 `str` 内存对象的所有权。以 `str` 为例，它只能以 `&str` `&mut str` `Box<str>` `String` 等形式呈现，前两者是对 `str` 的引用，后两者包含了指向 `str` 的指针。
 
 对于 slice 类型 `[T]` 而言，有三种常见的切片引用：
 
