@@ -7,7 +7,7 @@ slug = "rust-slice"
 
 ## 何为切片 Slice
 
-Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库，也是[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)的一种。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 `UTF-8` 编码的 `[u8]`。
+Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库，也是[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)的一种。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 UTF-8 编码的 `[u8]`。
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
@@ -81,7 +81,7 @@ let world: &str = &s[6..] // world 指向堆
 ```Rust
 use std::str;
 
-let x: &[u8] = &[b'a', b'b', b'c'];
+let x: &[u8] = &[b'a', b'b', b'c']; // &[u8; 3] 隐式转换为 &[u8]
 let stack_str: &str = str::from_utf8(x).unwrap();
 ```
 
@@ -97,7 +97,17 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 
 ## 切片语法
 
-在 Rust 中，我们可以用切片语法 `[start..=end]` `[start..end + 1]` `[..]` 从内存中截取一部分连续的同类型值，这会返回一个切片类型。又因为切片不能直接被使用，所以我们必须在切片语法前加上 `&` 符号。切片语法能自动解引用，可作用于 `String` `&String` `&str` `Vec<T>` `&Vec<T>` `&[T]` `[T; N]` 等类型。
+在 Rust 中，我们可以用切片语法 `[x..y]` 从内存中截取一串连续的同类型值，返回一个切片。`x..y` 表示 [x, y) 的数学含义。`..` 两边可以没有运算数：
+
+```Rust
+..y 等价于 0..y
+x.. 等价于位置 x 到数据结束
+.. 等价于位置 0 到结束
+```
+
+切片不能直接与变量绑定，所以必须在切片语法 `[x..y]` 前加上 `&` 符号，这会得到切片的引用。考虑到自动解引用，切片语法可作用于 `str` `[T]` `[T; N]` `String` `Vec<T>` 类型及其引用。
+
+对字符串使用切片语法需要格外小心，切片的索引必须落在字符之间的边界位置，也就是 UTF-8 字符的边界，例如中文在 UTF-8 中占用三个字节，若只取只取中文字符串的前两个字节，连第一个字都取不完整，此时程序会直接崩溃退出。关于该如何操作 UTF-8 字符串，参见这里。
 
 ## 总结
 
