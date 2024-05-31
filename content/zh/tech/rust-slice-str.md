@@ -7,7 +7,7 @@ slug = "rust-slice"
 
 ## 何为切片 Slice
 
-Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，也是一种[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，`str` 类型本质上就是符合 `UTF-8` 编码的 `[u8]` 类型，它就是字符串切片。
+Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库，也是[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)的一种。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 `UTF-8` 编码的 `[u8]`。
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
@@ -93,7 +93,11 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 
 ## `Box<str>` 字符串
 
-`Box<str>` 类型是 `Box<[T]>` 的子集，如前所述，它是一个智能指针/宽指针，将 `str` 放在堆上。不同于 `&str` `&mut str`，`Box<str>` 拥有内存对象的所有权。相比 `String` 类型，`Box<str>` 缺少 `capacity` 字段，这意味着无法修改 `Box<str>` 中 `str` 的长度，只能改变 `str` 中每个字符的值。
+`Box<str>` 类型是 `Box<[T]>` 的子集，如前所述，它是一个智能指针/宽指针，`str` 被存储在堆上。不同于 `&str` 和 `&mut str`，`Box<str>` 拥有内存对象的所有权。相比 `String` 类型，`Box<str>` 缺少 `capacity` 字段，这意味着无法修改 `Box<str>` 中 `str` 的长度，只能改变 `str` 中每个字符的值。
+
+## 切片语法
+
+在 Rust 中，我们可以用切片语法 `[start..=end]` `[start..end + 1]` `[..]` 从内存中截取一部分连续的同类型值，这会返回一个切片类型。又因为切片不能直接被使用，所以我们必须在切片语法前加上 `&` 符号。切片语法能自动解引用，可作用于 `String` `&String` `&str` `Vec<T>` `&Vec<T>` `&[T]` `[T; N]` 等类型。
 
 ## 总结
 
