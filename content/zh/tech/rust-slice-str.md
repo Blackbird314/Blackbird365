@@ -7,7 +7,7 @@ slug = "rust-slice"
 
 ## 何为切片 Slice
 
-Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库，也是[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)的一种。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 UTF-8 编码的 `[u8]`。
+Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 UTF-8 编码的 `[u8]`。
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
@@ -33,7 +33,7 @@ let slice: &[i32] = &boxed_array[..];
 
 有些编程语言（如 C 语言）会在字符串末尾添加一个零字符 `\0`，并记录起始地址。要确定字符串的长度，程序必须从起始位置开始遍历原始字节，直到找到这个零字节。但 Rust 采用的方法不同：它用来访问字符串的 `&str` 引用是宽指针，包括了字符串起始地址（裸指针）和所需字节数，这比追加零字节更好，因为计算在编译时就提前完成。
 
-事实上，上述三种切片引用都是宽指针，均包括了指向内存对象的指针和内存对象的尺寸，是普通指针的两倍大小。你可能会好奇，为什么切片的引用都是宽指针？这和我们之前提到的动态尺寸类型有关。
+事实上，上述三种切片引用都是宽指针，均包括了指向内存对象的指针和内存对象的尺寸，是普通指针的两倍大小。你可能会好奇，为什么切片的引用都是宽指针？这是因为切片是一种[动态尺寸类型(Dynamically sized type)](https://doc.rust-lang.org/reference/dynamically-sized-types.html)。
 
 ## 动态尺寸类型 DST
 
