@@ -59,13 +59,13 @@
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "datePublished": "2024-05-21T18:19:51+08:00",
-        "dateModified": "2024-06-01T17:22:46+08:00",
+        "dateModified": "2024-06-06T13:33:28+08:00",
         "url": "http://localhost:1313/tech/rust-ownership/",
         "headline": "Rust 核心语法：所有权与借用",
         "description": "但是，古尔丹，代价是什么呢？",
         "inLanguage" : "zh-hans",
         "articleSection": "tech",
-        "wordCount":  6675 ,
+        "wordCount":  6623 ,
         "image": "http://localhost:1313/static/icons/apple-touch-icon.png",
         "author": {
             "@type": "Person",
@@ -110,7 +110,7 @@
 <meta property="og:locale" content="zh-hans" /><meta property="og:image" content="http://localhost:1313/static/icons/apple-touch-icon.png" />
     <meta property="og:type" content="article" />
     <meta property="article:published_time" content="2024-05-21T18:19:51&#43;08:00" />
-    <meta property="article:modified_time" content="2024-06-01T17:22:46&#43;08:00" />
+    <meta property="article:modified_time" content="2024-06-06T13:33:28&#43;08:00" />
     
     <meta property="article:section" content="tech" />
 
@@ -253,7 +253,7 @@
     
     
         
-        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;6675</span>
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;6623</span>
     
     
         
@@ -534,7 +534,6 @@
 <p>如果 <code>b</code> 是没有实现 <code>Copy</code> 和 <code>Clone</code> 的可变引用，<code>b.clone()</code> 只能得到 <code>Person</code> 类型（前提是 <code>Person</code> 实现了 <code>Clone</code>）。</p>
 <h2 id="所有权树"><a href="#所有权树" class="anchor-link">#</a><a href="#contents:所有权树" class="headings">所有权树</a></h2>
 <p>Rust 每个拥有所有权的容器类型(<code>tuple</code>/<code>array</code>/<code>vec</code>/<code>struct</code>/<code>enum</code>等)变量和它的成员（以及成员的成员），会形成一棵所有权树。树中任何一个成员（假设叫 <code>A</code>）离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 Move 给新变量。</p>
-<p>同理，如果成员 <code>A</code> 存在可变引用，所有子成员都只能通过这个可变引用读写；如果存在共享引用，所有子成员都处于只读状态。</p>
 <p>当成员 <code>A</code> 所有权转移后，除非你为 <code>A</code> 重新初始化，否则 <code>A</code> 的所有父成员（包括树的根成员）将失去所有权（但不属于 <code>A</code> 子成员的仍然可用）。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Rust" data-lang="Rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">tup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="nb">String</span>::<span class="n">from</span><span class="p">(</span><span class="s">&#34;hello&#34;</span><span class="p">));</span><span class="w">
@@ -546,7 +545,8 @@
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;</span><span class="si">{}</span><span class="s">&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">tup</span><span class="p">.</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// 错误
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;</span><span class="si">{:?}</span><span class="s">&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">tup</span><span class="p">);</span><span class="w"> </span><span class="c1">// 错误
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h2 id="总结"><a href="#总结" class="anchor-link">#</a><a href="#contents:总结" class="headings">总结</a></h2>
+</span></span></span></code></pre></div><p>所有权树</p>
+<h2 id="总结"><a href="#总结" class="anchor-link">#</a><a href="#contents:总结" class="headings">总结</a></h2>
 <p>这张图展示了变量、类型、内存对象、值，引用、解引用和裸指针的概念：</p>
 <p><img alt="2024-05-24-17-17-25.png" src="/images/2024-05-24-17-17-25.png"></p>
 <div class="footnotes" role="doc-endnotes">
@@ -575,9 +575,9 @@
 
         
     <div class="updated-badge-container">
-        <span title="Updated @ 2024-06-01 17:22:46 CST" style="cursor:help">
+        <span title="Updated @ 2024-06-06 13:33:28 CST" style="cursor:help">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2024-06-01</text><text x="915" y="140" textLength="650" transform="scale(.1)">2024-06-01</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2024-06-06</text><text x="915" y="140" textLength="650" transform="scale(.1)">2024-06-06</text></g></svg>
         </span></div>
 
 

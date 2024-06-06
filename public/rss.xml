@@ -23,7 +23,7 @@
         
             <copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright>
         
-        <lastBuildDate>Sat, 01 Jun 2024 23:48:21 &#43;0800</lastBuildDate>
+        <lastBuildDate>Thu, 06 Jun 2024 13:34:27 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="http://localhost:1313/rss.xml" />
         
@@ -324,7 +324,6 @@
 &lt;p&gt;如果 &lt;code&gt;b&lt;/code&gt; 是没有实现 &lt;code&gt;Copy&lt;/code&gt; 和 &lt;code&gt;Clone&lt;/code&gt; 的可变引用，&lt;code&gt;b.clone()&lt;/code&gt; 只能得到 &lt;code&gt;Person&lt;/code&gt; 类型（前提是 &lt;code&gt;Person&lt;/code&gt; 实现了 &lt;code&gt;Clone&lt;/code&gt;）。&lt;/p&gt;
 &lt;h2 id=&#34;所有权树&#34;&gt;所有权树&lt;/h2&gt;
 &lt;p&gt;Rust 每个拥有所有权的容器类型(&lt;code&gt;tuple&lt;/code&gt;/&lt;code&gt;array&lt;/code&gt;/&lt;code&gt;vec&lt;/code&gt;/&lt;code&gt;struct&lt;/code&gt;/&lt;code&gt;enum&lt;/code&gt;等)变量和它的成员（以及成员的成员），会形成一棵所有权树。树中任何一个成员（假设叫 &lt;code&gt;A&lt;/code&gt;）离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 Move 给新变量。&lt;/p&gt;
-&lt;p&gt;同理，如果成员 &lt;code&gt;A&lt;/code&gt; 存在可变引用，所有子成员都只能通过这个可变引用读写；如果存在共享引用，所有子成员都处于只读状态。&lt;/p&gt;
 &lt;p&gt;当成员 &lt;code&gt;A&lt;/code&gt; 所有权转移后，除非你为 &lt;code&gt;A&lt;/code&gt; 重新初始化，否则 &lt;code&gt;A&lt;/code&gt; 的所有父成员（包括树的根成员）将失去所有权（但不属于 &lt;code&gt;A&lt;/code&gt; 子成员的仍然可用）。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Rust&#34; data-lang=&#34;Rust&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;fn&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;kd&#34;&gt;let&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;mut&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tup&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;String&lt;/span&gt;::&lt;span class=&#34;n&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -336,7 +335,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;fm&#34;&gt;println!&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// 错误
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;fm&#34;&gt;println!&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{:?}&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// 错误
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所有权树&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;这张图展示了变量、类型、内存对象、值，引用、解引用和裸指针的概念：&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;2024-05-24-17-17-25.png&#34; src=&#34;http://localhost:1313/images/2024-05-24-17-17-25.png&#34;&gt;&lt;/p&gt;
 &lt;hr&gt;
