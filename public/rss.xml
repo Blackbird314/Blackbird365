@@ -10,7 +10,7 @@
         <title>Ninephoenix</title>
         <link>http://localhost:1313/</link>
         <description>这是九头鸟的个人网站！</description>
-        <generator>Hugo 0.125.7 https://gohugo.io/</generator>
+        <generator>Hugo 0.126.3 https://gohugo.io/</generator>
         
             <language>zh-hans</language>
         
@@ -23,7 +23,7 @@
         
             <copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright>
         
-        <lastBuildDate>Thu, 06 Jun 2024 13:34:27 &#43;0800</lastBuildDate>
+        <lastBuildDate>Thu, 06 Jun 2024 13:46:11 &#43;0800</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="http://localhost:1313/rss.xml" />
         
