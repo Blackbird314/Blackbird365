@@ -3,7 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2024-06-06T13:33:28+08:00</lastmod>
+    <lastmod>2024-06-07T17:32:12+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -16,13 +16,13 @@
                 />
   </url><url>
     <loc>http://localhost:1313/tags/rust/</loc>
-    <lastmod>2024-06-06T13:33:28+08:00</lastmod>
+    <lastmod>2024-06-07T17:32:12+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tech/rust-lifetimes/</loc>
-    <lastmod>2024-06-03T17:50:51+08:00</lastmod>
+    <lastmod>2024-06-06T21:38:26+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tech/rust-ownership/</loc>
-    <lastmod>2024-06-06T13:33:28+08:00</lastmod>
+    <lastmod>2024-06-07T17:32:12+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/life/try/</loc>
     <lastmod>2024-05-22T19:07:32+08:00</lastmod>

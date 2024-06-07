@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-hans">
     <title type="text">Ninephoenix</title>
     <subtitle type="html">这是九头鸟的个人网站！</subtitle>
-    <updated>2024-06-06T13:46:11&#43;08:00</updated>
+    <updated>2024-06-07T23:16:39&#43;08:00</updated>
     <id>http://localhost:1313/</id>
     <link rel="alternate" type="text/html" href="http://localhost:1313/" />
     <link rel="self" type="application/atom&#43;xml" href="http://localhost:1313/atom.xml" />
@@ -20,16 +20,18 @@
             <title type="text">Rust 核心语法：生命周期与借用检查</title>
             <link rel="alternate" type="text/html" href="http://localhost:1313/tech/rust-lifetimes/" />
             <id>http://localhost:1313/tech/rust-lifetimes/</id>
-            <updated>2024-06-03T17:50:51&#43;08:00</updated>
+            <updated>2024-06-06T21:38:26&#43;08:00</updated>
             <published>2024-05-24T17:37:27&#43;08:00</published>
             <author>
                     <name>Ninephoenix</name>
                     <uri>https://ninephoenix.dev/</uri>
                     <email>sirius.su128@gmail.com</email>
                     </author>
-            <rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html"></summary>
+            <rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html">从重借用开始 前面提到，</summary>
             
-                <content type="html"></content>
+                <content type="html">&lt;h2 id=&#34;从重借用开始&#34;&gt;从重借用开始&lt;/h2&gt;
+&lt;p&gt;前面提到，&lt;/p&gt;
+</content>
             
             
             
@@ -65,7 +67,7 @@
             <title type="text">Rust 核心语法：所有权与借用</title>
             <link rel="alternate" type="text/html" href="http://localhost:1313/tech/rust-ownership/" />
             <id>http://localhost:1313/tech/rust-ownership/</id>
-            <updated>2024-06-06T13:33:28&#43;08:00</updated>
+            <updated>2024-06-07T17:32:12&#43;08:00</updated>
             <published>2024-05-21T18:19:51&#43;08:00</published>
             <author>
                     <name>Ninephoenix</name>
@@ -85,13 +87,13 @@
 &lt;p&gt;为了满足要求，Rust 语言提出了两个核心概念，即所有权(Ownership)和生命周期(Lifetimes)。这两大概念本质是对语法的一种限制，目的是在混沌中建立足够的秩序，以便让 Rust 在编译期有能力验证程序是否安全。所有权系统解决了内存释放以及二次释放的问题，生命周期系统则解决了悬垂指针问题。&lt;/p&gt;
 &lt;p&gt;当然，在工程领域，..一切选择皆是权衡..。Rust 不是完美的等边三角，兼顾了安全和性能，则必然要付出一些代价，包括更长的编译时间、更高的心智负担，还有要命的语法限制——你很难用 safe rust 写出一个双向链表或红黑树。但这并非不可接受，不仅因为手写它们的机会越来越少，也因为你可以在 unsafe 中封装这些“不安全”的结构。记住，..unsafe.. 不是 ..nosafe..，只是将安全保证由编译器交到程序员手中，它与 C/C++ 没什么区别，甚至还更安全和现代一点。&lt;/p&gt;
 &lt;h2 id=&#34;rust-内存模型&#34;&gt;Rust 内存模型&lt;/h2&gt;
-&lt;p&gt;在程序运行时，操作系统会为程序分配内存空间，并将之加载进内存。Rust 没有严格定义其使用的内存模型(即没有相关规范说明)，但可以按下图粗略理解，包括了堆区、栈区、静态数据区、只读数据区和只读指令区，如图所示：&lt;/p&gt;
+&lt;p&gt;在程序运行时，操作系统会为程序分配内存空间，并将之加载进内存。Rust 尚未严格定义其内存模型，但可以按下图粗略理解，包括了堆区、栈区、静态数据区、只读数据区和只读指令区，如图所示：&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;2024-05-23-17-54-54.png&#34; src=&#34;http://localhost:1313/images/2024-05-23-17-54-54.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;对于每个部分存储的内容，大致有如下分类：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Stack（栈）
 &lt;ul&gt;
-&lt;li&gt;栈用于存储函数参数和局部变量，内存对象的数据类型及其大小必须已知&lt;/li&gt;
+&lt;li&gt;栈用于存储函数参数和局部变量，内存对象的数据类型及其大小必须在编译时确定&lt;/li&gt;
 &lt;li&gt;栈内存分配是连续的，操作系统对栈内存大小有所限制，因此你无法创建过长的数组&lt;/li&gt;
 &lt;li&gt;栈内存的分配效率要高于堆内存&lt;/li&gt;
 &lt;/ul&gt;
@@ -113,7 +115,7 @@
 &lt;/li&gt;
 &lt;li&gt;Instructions（只读代码区）
 &lt;ul&gt;
-&lt;li&gt;存放可执行代码&lt;/li&gt;
+&lt;li&gt;存放可执行指令&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
@@ -329,8 +331,9 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;fm&#34;&gt;println!&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// 错误
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;fm&#34;&gt;println!&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{:?}&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// 错误
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所有权树&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;重借用&#34;&gt;重借用&lt;/h2&gt;
+&lt;p&gt;上文提到，借用检查不允许对一个实例的多个可变引用，也不能同时存在共享和可变引用。但对解引用得到的影子变量进行二次借用却是可行的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Rust&#34; data-lang=&#34;Rust&#34;&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
 &lt;p&gt;这张图展示了变量、类型、内存对象、值，引用、解引用和裸指针的概念：&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;2024-05-24-17-17-25.png&#34; src=&#34;http://localhost:1313/images/2024-05-24-17-17-25.png&#34;&gt;&lt;/p&gt;
 &lt;hr&gt;
