@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-hans">
     <title type="text">Ninephoenix</title>
     <subtitle type="html">这是九头鸟的个人网站！</subtitle>
-    <updated>2024-06-09T13:57:05&#43;08:00</updated>
+    <updated>2024-06-09T13:58:33&#43;08:00</updated>
     <id>http://localhost:1313/</id>
     <link rel="alternate" type="text/html" href="http://localhost:1313/" />
     <link rel="self" type="application/atom&#43;xml" href="http://localhost:1313/atom.xml" />
@@ -20,17 +20,16 @@
             <title type="text">Rust 核心语法：生命周期与借用检查</title>
             <link rel="alternate" type="text/html" href="http://localhost:1313/tech/rust-lifetimes/" />
             <id>http://localhost:1313/tech/rust-lifetimes/</id>
-            <updated>2024-06-06T21:38:26&#43;08:00</updated>
+            <updated>2024-06-09T13:58:28&#43;08:00</updated>
             <published>2024-05-24T17:37:27&#43;08:00</published>
             <author>
                     <name>Ninephoenix</name>
                     <uri>https://ninephoenix.dev/</uri>
                     <email>sirius.su128@gmail.com</email>
                     </author>
-            <rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html">从重借用开始 前面提到，</summary>
+            <rights>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</rights><summary type="html">从重借用开始</summary>
             
                 <content type="html">&lt;h2 id=&#34;从重借用开始&#34;&gt;从重借用开始&lt;/h2&gt;
-&lt;p&gt;前面提到，&lt;/p&gt;
 </content>
             
             
