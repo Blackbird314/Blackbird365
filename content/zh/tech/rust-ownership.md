@@ -407,8 +407,8 @@ println!("{}", r1);
 ```Rust
 let mut s = String::from("ABC");
 let r1 = &mut s;
-let r2 = r1; // 不手动标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
-// 手动标注 r2 的类型，会进行非隐式重借用
+let r2 = r1; // 不标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
+// 手动标注 r2 的类型，会进行非隐式重借用，比如调用函数时传参
 let r3: &mut String = r2; // 相当于 let r3: &mut String = &mut *r2;
 println!("{:?}", r3);
 println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
