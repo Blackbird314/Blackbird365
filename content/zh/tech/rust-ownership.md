@@ -371,7 +371,7 @@ fn main() {
 let mut s = String::from("ABC");
 let r1 = &mut s;
 {
-    let r2 = &mut *r1;
+    let r2 = &mut *r1; // 重借用
     r2.push('2');
     println!("{}", r2); // r2 的作用域到此结束
 }
