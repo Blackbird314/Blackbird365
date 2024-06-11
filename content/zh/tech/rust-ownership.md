@@ -407,7 +407,8 @@ println!("{}", r1);
 ```Rust
 let mut s = String::from("ABC");
 let r1 = &mut s;
-let r2 = r1; // 不标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
+// 不标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
+let r2 = r1;
 // 手动标注 r2 的类型，会进行非隐式重借用，比如调用函数时传参
 let r3: &mut String = r2; // 相当于 let r3: &mut String = &mut *r2;
 println!("{:?}", r3);
@@ -415,6 +416,63 @@ println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
 ```
 
 对共享引用 `&T`，可以认为发生了重借用, 也可以认为直接发生 `Copy`，因为效果完全一样。
+
+### 手写重借用
+
+下面这两种情况[^4]，`from()` 函数不会自动重借用：
+
+```Rust
+struct X;
+
+impl From<&mut i32> for X {
+    fn from(i: &mut i32) -> Self {
+        X
+    }
+}
+
+let mut i = 4;
+let r = &mut i;
+
+fn from_auto_reborrow<'a, F, T: From<&'a mut F>>(f: &'a mut F) -> T {
+    T::from(f)
+}
+let x: X = from_auto_reborrow(r); // 可以自动重借用
+let x: X = from_auto_reborrow(r); // 可以自动重借用
+
+fn from<F, T: From<F>>(f: F) -> T {
+    T::from(f)
+}
+let x: X = from(&mut *r); // 必须显式重借用, 创建 x 的 reborrow 不会 move x
+let x: X = from(r); // 此处不会自动重借用, 导致 Move x
+let x: X = from(r); // 编译失败
+```
+
+```Rust
+struct I(i32);
+
+struct X1;
+impl From<&mut I> for X1 {
+    fn from(p: &mut I) -> X1 {
+        p.0 = 1;
+        X1
+    }
+}
+// 必须引入这个中间函数
+fn x1(p: &mut I) -> X1 {
+    X1::from(p)
+}
+
+// value used here after move
+fn from_twice_fail(p: &mut I) {
+    let x11 = X1::from(p); // p Move
+    let x12 = X1::from(p); // 编译失败
+}
+
+fn from_twice(p: &mut I) {
+    let x11 = x1(p); // 此处不会自动重借用, 导致 Move p
+    let x12 = x1(p); // 编译通过
+}
+```
 
 ## 总结
 
@@ -427,3 +485,4 @@ println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
 [^1]: 参考：<https://stackoverflow.com/questions/30288782/what-are-move-semantics-in-rust>
 [^2]: 参考：<https://doc.rust-lang.org/std/marker/trait.Copy.html#when-should-my-type-be-copy>
 [^3]: 参考：<https://rustc-dev-guide.rust-lang.org/method-lookup.html?highlight=lookup#method-lookup>
+[^4]: 参考：<https://rustcc.cn/article?id=28fedcbc-d0c9-41e1-8d95-de73a578a078>
