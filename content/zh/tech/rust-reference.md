@@ -1,0 +1,262 @@
++++
+title = "Rust 核心语法：借用"
+date = "2024-07-07T16:39:09+08:00"
+tags = ["Rust"]
+slug = "rust-reference"
++++
+
+## 引用
+
+和 C/C++ 一样，Rust 有裸指针(Pointer)类型和引用(Reference)类型，分别是共享引用（不可变引用） `&T` 和可变引用 `&mut T`，常量裸指针（不可变指针） `*const T` 和可变裸指针 `*T`，他们的值都是 `T` 类型对象的地址，都可以通过解引用操作指向内存对象。
+
+区别在于，Rust 认为裸指针是不安全的操作，所以它只能在 `unsafe` 块中使用，引用则是被编译器加了限制的裸指针，遵循借用规则(Borrowing Rules)并由编译器检查，以保证安全。
+
+为了使用方便，Rust 引用的作用域比普通变量更短：普通变量的作用域从初始化持续到最近的花括号 `}`；引用的作用域从借用开始，一直持续到它最后一次使用的地方。这种优化行为被称为非词法作用域生命周期(Non-Lexical Lifetimes, NLL)。
+
+创建一个引用的行为称为借用(Borrowing)，代表着引用会借用（而非获得）原变量对内存对象的所有权。当你只想使用变量，而不想转移所有权时，可以通过借用访问内存对象，例如：
+
+```Rust
+fn main() {
+    let s1 = String::from("hello"); // s1 本质是一个指向堆内存的指针
+
+    let len = calculate_length(&s1); // 发生了不可变借用
+
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calculate_length(s: &String) -> usize { // s 是指向 s1 的引用
+    s.len()
+}
+```
+
+传入 `calculate_length()` 的是 `s1` 的共享引用，参数 `s` 会借用 `s1` 的所有权，如图所示：
+
+![2024-05-24-15-42-23.png](/images/2024-05-24-15-42-23.png)
+
+Rust 的借用规则很有趣：
+
+1. 在同一时刻，要么只有一个可变引用(`&mut T`)，要么有任意数量的共享引用(`&T`)。可变引用与共享引用不能同时存在，也不能同时存在多个可变引用。正因如此，可变引用 `&mut T` 不能实现 `Copy`，这会违反借用规则。当然，共享引用是可 Copy 的，即把共享引用赋值给另一个共享引用后，可以继续使用
+2. 引用必须总是有效的，即引用的生命周期不能超过原变量的生命周期。所以当存在借用时，原变量不能 Move，但可以 Copy 或 Clone
+
+为什么会有这样的规定呢？因为 Rust 希望在同一时刻，..一份资源只能被至多一个变量名读写，或者被多个变量名读取..。由此：
+
+- 对于不可变借用(`let y = &x`)：1)引用 `y` 是只读的；2)在 `y` 作用域结束之前，`x` 可读不可写（因为存在 `y` 可读），因此 `x` 能被不可变借用但不能被可变借用
+- 对于可变借用(`let y = &mut x`)：1)引用 `y` 可读写；2)在 `y` 作用域结束之前，`x` 不可读不可写（因为存在 `y` 可写），因此 `x` 不能再次被借用
+
+下面这段代码会报错：
+
+```Rust
+fn main() {
+    let mut x = 0;
+    let y = &mut x; // y 可变借用于 x
+    if x == 0 { // 报错：存在 x 的可变引用 y，此时不能通过原变量 x 读取值（也不可写入值）
+        *y += 1; // y 的作用域到此结束
+        println!("{}", x); // x 可以正常读取
+    }
+}
+```
+
+## 解引用
+
+解引用操作 `*r` 会得到一个被称为影子变量的东西，可以理解为没有所有权的变量别名。它可以用来对内存对象进行读写，但不能通过它转移所有权（但可以 Copy 或 Clone），这会影响本体对于内存对象的掌控：
+
+```Rust
+struct MyType<T> {
+    val: T
+}
+
+fn main() {
+    let num1 = 1;
+    let num1_ref = &num1;
+    // i32 类型实现了 Copy，因此 i32 类型的影子变量会进行 Copy 操作，这不会影响本体的所有权
+    let num2 = *num1_ref;
+    let x = MyType{val: 1};
+    let y = &x;
+    // 这里报错，因为无法通过解引用得到的影子变量移动所有权
+    let z = *y;
+}
+```
+
+## 引用类型的所有权
+
+Rust 中所有的值都有所有权，引用类型的值也不例外。引用不拥有指向对象的所有权，但引用变量拥有自身地址值的所有权。参考下面这段代码：
+
+```Rust
+fn main() {
+    let mut s = String::from("value");
+    let r = &mut s; // r 是 s 的可变引用
+    let r1 = r; // move 而非 copy
+    println!("{}", r); // 报错 borrow of moved value: `r`
+}
+```
+
+上文提到，共享引用实现了 `Copy`，自然也实现了 `Clone`，而下面的结构体 `Person` 没有实现 `Clone`，因此 `b.clone()` 只能复制引用 `b`，不能复制引用指向的内存对象。虽然这能通过编译，但 clippy 不建议我们这样做，因为它的行为相当于 `Copy` 操作，很可能不是我们希望的克隆效果。
+
+```Rust
+struct Person;
+
+let a = Person;
+let b = &a;
+let c = b.clone();  // c 的类型是 &Person
+```
+
+但如果为结构体 `Person` 实现 `Clone`，再去 `clone()` 引用类型，将没有错误提示：
+
+```Rust
+#[derive(Clone)]
+struct Person;
+
+let a = Person;
+let b = &a;
+let c = b.clone();  // 此时 c 的类型是 Person，而不是 &Person
+```
+
+前后两个示例的区别，仅在于引用所指向的类型 `Person` 有没有实现 `Clone`。所以得出结论：
+
+- 没有实现 `Clone` 时，引用类型的 `clone()` 将等价于 Copy
+- 实现了 `Clone` 时，引用类型的 `clone()` 将克隆并得到引用所指向的类型
+
+这是因为，方法调用时会先查找与调用者类型匹配的方法，查找过程具有优先级，找到即停。由于 `.` 操作可以自动引用/解引用，如果引用/解引用前后的两种类型都实现了同一方法(如 `clone()`)，Rust 编译器将按照查找顺序来决定调用哪个类型上的方法。[^1]
+
+如果 `b` 是没有实现 `Copy` 和 `Clone` 的可变引用，`b.clone()` 只能得到 `Person` 类型（前提是 `Person` 实现了 `Clone`）。
+
+## 所有权树
+
+Rust 每个拥有所有权的容器类型(`tuple`/`array`/`vec`/`struct`/`enum`等)变量和它的成员（以及成员的成员），会形成一棵所有权树。树中任何一个成员（假设叫 `A`）离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 Move 给新变量。
+
+当成员 `A` 所有权转移后，除非你为 `A` 重新初始化，否则 `A` 的所有父成员（包括树的根成员）将失去所有权（但不属于 `A` 子成员的仍然可用）。
+
+```Rust
+fn main() {
+    let mut tup = (5, String::from("hello"));
+
+    let (x, y) = tup; // tup.1 转移所有权给 y，tup.0 copy 给 x
+    println!("{},{}", x, y); // 正确
+    println!("{}", tup.0); // 正确
+    // tup.1 = String::from("world"); // 重新初始化 tup 可以修正错误
+    println!("{}", tup.1); // 错误
+    println!("{:?}", tup); // 错误
+}
+```
+
+## 小结
+
+这张图展示了变量、类型、内存对象、值，引用、解引用和裸指针的概念：
+
+![2024-05-24-17-17-25.png](/images/2024-05-24-17-17-25.png)
+
+## 重借用
+
+上文提到，借用检查不允许对一个实例的多个可变引用，也不能同时存在共享和可变引用。但对解引用得到的影子变量进行借用（重借用）却是可行的：
+
+```Rust
+let mut s = String::from("ABC");
+let r1 = &mut s;
+{
+    let r2 = &mut *r1; // 重借用
+    r2.push('2');
+    println!("{}", r2); // r2 的作用域到此结束
+}
+println!("{}", r1); // r1 的作用域到此结束
+```
+
+这段代码的大括号内，同时存在 `r1` `r2` 两个指向同一变量 `s` 的可变引用，但编译器不会报错。这是因为编译器看到 `*r1` 的时候，通常很难确定解引用得到的实际对象是什么，所以借用检查不会把 `*r1` 跟 `s` 当成同一个对象，自然不会报错。
+
+关于重借用，唯一的限制是不能在 `r2` 的生命周期中使用 `r1`，这样就不会违反借用规则：
+
+```Rust
+let mut s = String::from("ABC");
+let r1 = &mut s;
+{
+    let r2 = &mut *r1;
+
+    let l = r1.len(); // 错误 Cannot borrow `*r1` as immutable because it is also borrowed as mutable
+    println!("{}", l);
+    r2.push('2');
+    r1.push('3'); // 错误 Cannot borrow `*r1` as mutable more than once at a time
+    println!("{:?}", r1); // 错误 Cannot borrow `r1` as immutable because it is also borrowed as mutable
+    println!("{}", r2);
+}
+println!("{}", r1);
+```
+
+你可能会好奇，明明传入方法的是引用类型，为什么前两条报错信息中会显示 `*r1`？这是因为发生了隐式重借用，`r1.len()` 实际上是 `String::len(&*r1)`，同理 `r1.push('3')` 实际上是 `String::push(&mut *r1, '3')`。
+
+隐式重借用并非多此一举，`len()` 和 `push()` 的方法签名分别是 `pub fn len(&self) -> usize` 和 `pub fn push(&mut self, ch: char)`。没有隐式重借用，可变引用 `r1` 将无法调用 `len()`，而 `r1.push('3')` 会转移可变引用 `r1` 的所有权，导致 `r1` 之后无法使用。
+
+事实上，隐式重借用几乎无处不在：
+
+```Rust
+let mut s = String::from("ABC");
+let r1 = &mut s;
+// 不标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
+let r2 = r1;
+// 手动标注 r2 的类型，会进行非隐式重借用，函数传参同理
+let r3: &mut String = r2; // 相当于 let r3: &mut String = &mut *r2;
+println!("{:?}", r3);
+println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
+```
+
+对共享引用 `&T`，可以认为发生了重借用, 也可以认为直接发生 `Copy`，因为效果完全一样。
+
+### 手写重借用
+
+下面这两种情况[^2]，`from()` 函数不会自动重借用：
+
+```Rust
+struct X;
+
+impl From<&mut i32> for X {
+    fn from(i: &mut i32) -> Self {
+        X
+    }
+}
+
+let mut i = 4;
+let r = &mut i;
+
+fn from_auto_reborrow<'a, F, T: From<&'a mut F>>(f: &'a mut F) -> T {
+    T::from(f)
+}
+let x: X = from_auto_reborrow(r); // 可以自动重借用
+let x: X = from_auto_reborrow(r); // 可以自动重借用
+
+fn from<F, T: From<F>>(f: F) -> T {
+    T::from(f)
+}
+let x: X = from(&mut *r); // 必须显式重借用, 创建 x 的 reborrow 不会 move x
+let x: X = from(r); // 此处不会自动重借用, 导致 Move x
+let x: X = from(r); // 编译失败
+```
+
+```Rust
+struct I(i32);
+
+struct X1;
+impl From<&mut I> for X1 {
+    fn from(p: &mut I) -> X1 {
+        p.0 = 1;
+        X1
+    }
+}
+// 必须引入这个中间函数
+fn x1(p: &mut I) -> X1 {
+    X1::from(p)
+}
+
+// value used here after move
+fn from_twice_fail(p: &mut I) {
+    let x11 = X1::from(p); // p Move
+    let x12 = X1::from(p); // 编译失败
+}
+
+fn from_twice(p: &mut I) {
+    let x11 = x1(p); // 此处不会自动重借用, 导致 Move p
+    let x12 = x1(p); // 编译通过
+}
+```
+
+---
+
+[^1]: 参考：<https://rustc-dev-guide.rust-lang.org/method-lookup.html?highlight=lookup#method-lookup>
+[^2]: 参考：<https://rustcc.cn/article?id=28fedcbc-d0c9-41e1-8d95-de73a578a078>
