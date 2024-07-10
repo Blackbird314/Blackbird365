@@ -1,5 +1,5 @@
 +++
-title = "Rust 核心语法：借用"
+title = "Rust 语法辨析：借用与重借用"
 date = "2024-07-07T16:39:09+08:00"
 tags = ["Rust"]
 slug = "rust-reference"
