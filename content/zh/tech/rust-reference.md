@@ -118,25 +118,6 @@ let c = b.clone();  // 此时 c 的类型是 Person，而不是 &Person
 
 如果 `b` 是没有实现 `Copy` 和 `Clone` 的可变引用，`b.clone()` 只能得到 `Person` 类型（前提是 `Person` 实现了 `Clone`）。
 
-## 所有权树
-
-Rust 每个拥有所有权的容器类型(`tuple`/`array`/`vec`/`struct`/`enum`等)变量和它的成员（以及成员的成员），会形成一棵所有权树。树中任何一个成员（假设叫 `A`）离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 Move 给新变量。
-
-当成员 `A` 所有权转移后，除非你为 `A` 重新初始化，否则 `A` 的所有父成员（包括树的根成员）将失去所有权（但不属于 `A` 子成员的仍然可用）。
-
-```Rust
-fn main() {
-    let mut tup = (5, String::from("hello"));
-
-    let (x, y) = tup; // tup.1 转移所有权给 y，tup.0 copy 给 x
-    println!("{},{}", x, y); // 正确
-    println!("{}", tup.0); // 正确
-    // tup.1 = String::from("world"); // 重新初始化 tup 可以修正错误
-    println!("{}", tup.1); // 错误
-    println!("{:?}", tup); // 错误
-}
-```
-
 ## 小结
 
 这张图展示了变量、类型、内存对象、值，引用、解引用和裸指针的概念：
