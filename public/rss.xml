@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.127.0 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Wed, 10 Jul 2024 17:13:22 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 语法辨析：生命周期</title><link>https://ninephoenix.dev/tech/rust-lifetimes/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-lifetimes/</guid><pubDate>Tue, 09 Jul 2024 19:09:18 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description/><category domain="https://ninephoenix.dev/tech/">tech\</category><category domain="https://ninephoenix.dev/tags/rust/">rust</category></item><item><title>Rust 语法辨析：借用与重借用</title><link>https://ninephoenix.dev/tech/rust-reference/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-reference/</guid><pubDate>Sun, 07 Jul 2024 16:39:09 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引用">引用&lt;/h2>
+<?xml version="1.0" encoding="utf-8"?><rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ninephoenix</title><link>https://ninephoenix.dev/</link><description>这是九头鸟的个人网站！</description><generator>Hugo 0.127.0 https://gohugo.io/</generator><language>zh-hans</language><managingEditor>sirius.su128@gmail.com (Ninephoenix)</managingEditor><webMaster>sirius.su128@gmail.com (Ninephoenix)</webMaster><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><lastBuildDate>Thu, 11 Jul 2024 11:01:07 +0800</lastBuildDate><atom:link rel="self" type="application/rss+xml" href="https://ninephoenix.dev/rss.xml"/><item><title>Rust 语法辨析：生命周期</title><link>https://ninephoenix.dev/tech/rust-lifetimes/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-lifetimes/</guid><pubDate>Tue, 09 Jul 2024 19:09:18 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description/><category domain="https://ninephoenix.dev/tech/">tech\</category><category domain="https://ninephoenix.dev/tags/rust/">rust</category></item><item><title>Rust 语法辨析：借用与重借用</title><link>https://ninephoenix.dev/tech/rust-reference/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-reference/</guid><pubDate>Sun, 07 Jul 2024 16:39:09 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="借用">借用&lt;/h2>
 &lt;p>和 C/C++ 一样，Rust 有裸指针(Pointer)类型和引用(Reference)类型，分别是共享引用（不可变引用） &lt;code>&amp;amp;T&lt;/code> 和可变引用 &lt;code>&amp;amp;mut T&lt;/code>，常量裸指针（不可变指针） &lt;code>*const T&lt;/code> 和可变裸指针 &lt;code>*T&lt;/code>，他们的值都是 &lt;code>T&lt;/code> 类型对象的地址，都可以通过解引用操作指向内存对象。&lt;/p>
 &lt;p>区别在于，Rust 认为裸指针是不安全的操作，所以它只能在 &lt;code>unsafe&lt;/code> 块中使用，引用则是被编译器加了限制的裸指针，遵循借用规则(Borrowing Rules)并由编译器检查，以保证安全。&lt;/p>
 &lt;p>为了使用方便，Rust 引用的作用域比普通变量更短：普通变量的作用域从初始化持续到最近的花括号 &lt;code>}&lt;/code>；引用的作用域从借用开始，一直持续到它最后一次使用的地方。这种优化行为被称为非词法作用域生命周期(Non-Lexical Lifetimes, NLL)。&lt;/p>
@@ -20,7 +20,7 @@
 &lt;ul>
 &lt;li>共享引用(&lt;code>&amp;amp;T&lt;/code>)有效期间，只能由被引用对象借出共享引用，只能以只读的方式访问被引用对象&lt;/li>
 &lt;li>可变引用(&lt;code>&amp;amp;mut T&lt;/code>)有效期间，无法由被引用对象借出任何引用，无法访问被引用对象&lt;/li>
-&lt;li>引用必须总是有效的，即引用的生命周期不能超过原变量的生命周期。所以当存在借用时，原变量不能 Move，但可以 Copy 或 Clone&lt;/li>
+&lt;li>引用必须总是有效的，即引用的生命周期不能超过原变量的生命周期。所以当存在借用时，原变量不能转移所有权，但可以 Copy 或 Clone&lt;/li>
 &lt;/ul>
 &lt;p>换言之，在同一时刻，要么只存在一个可变引用(&lt;code>&amp;amp;mut T&lt;/code>)，要么存在任意数量的共享引用(&lt;code>&amp;amp;T&lt;/code>)。正因如此，可变引用 &lt;code>&amp;amp;mut T&lt;/code> 没有实现 &lt;code>Copy&lt;/code>，否则很容易违反借用规则。相反，共享引用是可 Copy 的，即把共享引用赋值给另一个共享引用后，可以继续使用。&lt;/p>
 &lt;p>为什么会有这样的规则呢？因为 Rust 希望在同一时刻，..一份资源只能被至多一个变量名读写，或者被多个变量名读取..。由此，下面这段代码会报错：&lt;/p>
@@ -33,7 +33,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="解引用">解引用&lt;/h2>
-&lt;p>解引用操作 &lt;code>*r&lt;/code> 会得到一个被称为影子变量的东西，可以理解为没有所有权的变量别名。它可以用来对内存对象进行读写，但不能通过它转移所有权（但可以 Copy 或 Clone），这会影响本体对于内存对象的掌控：&lt;/p>
+&lt;p>解引用操作 &lt;code>*r&lt;/code> 会得到一个被称为影子变量的东西，可以理解为没有所有权的变量别名。它可以用来对内存对象进行读写，但不能通过它转移所有权，这会影响本体对于内存对象的掌控（可以 Copy 或 Clone）：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-Rust" data-lang="Rust">&lt;span class="line">&lt;span class="cl">&lt;span class="k">struct&lt;/span> &lt;span class="nc">MyType&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">T&lt;/span>&lt;span class="o">&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">val&lt;/span>: &lt;span class="nc">T&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
@@ -220,7 +220,7 @@
 &lt;/li>
 &lt;/ol>
 &lt;/div></description><category domain="https://ninephoenix.dev/tech/">tech\</category><category domain="https://ninephoenix.dev/tags/rust/">rust</category></item><item><title>Rust 语法辨析：所有权</title><link>https://ninephoenix.dev/tech/rust-ownership/</link><guid isPermaLink="true">https://ninephoenix.dev/tech/rust-ownership/</guid><pubDate>Tue, 21 May 2024 18:19:51 +0800</pubDate><author>sirius.su128@gmail.com (Ninephoenix)</author><copyright>在保留本文作者及本文连结的前提下，非商业用途随意转载分享。</copyright><description>&lt;h2 id="引言">引言&lt;/h2>
-&lt;p>所有编程语言都无法回避的一个问题是内存管理，理想的编程语言应该有以下两个特点：&lt;/p>
+&lt;p>所有编程语言都无法回避内存管理问题，我们理想的编程语言应该有以下两个特点：&lt;/p>
 &lt;ul>
 &lt;li>内存对象能在正确的时机及时释放，这使我们能控制程序的内存消耗&lt;/li>
 &lt;li>在内存对象被释放后，不应该继续使用指向它的指针，这会导致崩溃和安全漏洞&lt;/li>
