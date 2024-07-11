@@ -180,7 +180,7 @@ let r1 = &mut s;
 println!("{}", r1);
 ```
 
-你可能会好奇，明明传入方法的是引用类型，为什么前两条报错信息中会显示 `*r1`？这是因为发生了隐式重借用，`r1.len()` 实际上是 `String::len(&*r1)`，同理 `r1.push('3')` 实际上是 `String::push(&mut *r1, '3')`。
+你可能会好奇，明明传入方法的是引用类型，为什么前两条报错信息中会显示 `*r1`？这是因为自动发生了隐式重借用，`r1.len()` 实际上是 `String::len(&*r1)`，同理 `r1.push('3')` 实际上是 `String::push(&mut *r1, '3')`。
 
 隐式重借用并非多此一举，`len()` 和 `push()` 的方法签名分别是 `pub fn len(&self) -> usize` 和 `pub fn push(&mut self, ch: char)`。没有隐式重借用，可变引用 `r1` 将无法调用 `len()`，而 `r1.push('3')` 会转移可变引用 `r1` 的所有权，导致 `r1` 之后无法使用。
 
@@ -199,7 +199,7 @@ println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
 
 对共享引用 `&T`，可以认为发生了重借用, 也可以认为直接发生 `Copy`，因为效果完全一样。
 
-### 手写重借用
+### 手动重借用
 
 下面这两种情况[^2]，`from()` 函数不会自动重借用：
 
@@ -218,14 +218,14 @@ let r = &mut i;
 fn from_auto_reborrow<'a, F, T: From<&'a mut F>>(f: &'a mut F) -> T {
     T::from(f)
 }
-let x: X = from_auto_reborrow(r); // 可以自动重借用
-let x: X = from_auto_reborrow(r); // 可以自动重借用
+let x: X = from_auto_reborrow(r); // 隐式重借用
+let x: X = from_auto_reborrow(r); // 隐式重借用
 
 fn from<F, T: From<F>>(f: F) -> T {
     T::from(f)
 }
-let x: X = from(&mut *r); // 必须显式重借用, 创建 x 的 reborrow 不会 move x
-let x: X = from(r); // 此处不会自动重借用, 导致 Move x
+let x: X = from(&mut *r); // 显式重借用以避免 Move r
+let x: X = from(r); // 不会进行隐式重借用, 导致 Move r
 let x: X = from(r); // 编译失败
 ```
 
@@ -246,12 +246,12 @@ fn x1(p: &mut I) -> X1 {
 
 // value used here after move
 fn from_twice_fail(p: &mut I) {
-    let x11 = X1::from(p); // p Move
+    let x11 = X1::from(p); // 此处不会自动重借用, 导致 Move p
     let x12 = X1::from(p); // 编译失败
 }
 
 fn from_twice(p: &mut I) {
-    let x11 = x1(p); // 此处不会自动重借用, 导致 Move p
+    let x11 = x1(p); // 隐式重借用
     let x12 = x1(p); // 编译通过
 }
 ```
