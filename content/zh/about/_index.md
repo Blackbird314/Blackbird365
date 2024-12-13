@@ -17,7 +17,7 @@ Rage, rage against the dying of the light.</em></p>
 
 ---
 
-欢迎来到 ***Ninephoenix*** 的个人网站！我是九头鸟，唯物主义/无神论者，INTP，IOS & MacOS 拥护者，热衷于开源的 Rustacean。
+欢迎来到 ***Ninephoenix*** 的个人网站！我是九头鸟，唯物主义/无神论者，INTP，IOS & MacOS 拥护者，热衷开源的 Rustacean。
 
 <!-- 我的技术栈 -->
 
