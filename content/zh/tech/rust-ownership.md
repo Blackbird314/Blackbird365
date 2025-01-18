@@ -65,14 +65,14 @@ fn main() {
 
 `Variable` 被称为变量，`Type` 是其类型，而 `Value` 被称为..内存对象..，也叫做值。每一个赋值操作称为值..绑定..，因为此时不仅仅对变量进行了赋值，我们还把..内存对象的所有权..一并给予了变量。此处的内存对象 `Value` 可以是栈内存，也可以是堆内存（但它一定有一个栈指针）。
 
-> 重点辨析：既然堆内存对象都是由栈上指针进行管理的，那么当 `Value` 包含 `String::from("xxx")` 或 `Box::new(xxx)` 这样的堆内存时，严格来说，`Variable` 拥有的是栈上指针的所有权，而非堆内存字符串(`Value`)。但因为 `Variable` 实现了指向内存的释放逻辑，`Variable` 实质上拥有指向内存的所有权。Rust 所有权的本质，就是..明确谁负责释放资源的责任..。
+> 语法辨析：既然堆内存对象都是由栈上指针进行管理的，那么当 `Value` 包含形如 `String::from("xxx")` 或 `Box::new(xxx)` 的堆内存时，严格来说，`Variable` 拥有的是栈上指针的所有权，而非堆内存。但因为 `Type` 类型实现了指向内存的释放逻辑(`Drop::drop()`)，`Variable` 实质上拥有指向内存的所有权。Rust 所有权的本质，就是..明确由谁负责释放资源..。
 
 Rust 所有权的核心规则很简单：
 
 1. 每一个内存对象，在任意时刻，都有且只有一个称作所有者(owner)的变量
 2. 当所有者（变量）离开作用域时，这个内存对象将被释放
 
-编译器知道本地变量 `Variable` 何时离开作用域，自然也就知道何时执行对内存对象 `Value` 的回收。而所有者唯一，保证了不会出现二次释放同一内存的错误。
+编译器知道本地变量 `Variable` 何时离开作用域出栈，自然也就知道何时回收内存对象 `Value`。而所有者唯一，保证了不会出现二次释放同一内存的错误。
 
 切记，所有权是一个编译器抽象的概念，它不存在于实际的代码中，仅仅是一种思想和规则。
 
@@ -91,7 +91,7 @@ let mut s1 = String::from("big str");
 let s2 = s1;
 
 // 下面将报错 error: borrow of moved value: `s1`
-println!("{},{}", s1, s2); 
+println!("{},{}", s1, s2);
 
 // 重新赋值
 // "big str" 被自动释放，为 "new str" 分配新的堆内存
@@ -251,4 +251,5 @@ fn main() {
 ---
 
 [^1]: 参考：<https://stackoverflow.com/questions/30288782/what-are-move-semantics-in-rust>
+
 [^2]: 参考：<https://doc.rust-lang.org/std/marker/trait.Copy.html#when-should-my-type-be-copy>
