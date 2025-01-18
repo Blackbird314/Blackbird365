@@ -2,7 +2,7 @@
 # 站点配置
 
 baseURL = "https://ninephoenix.dev/"
-title = "Ninephoenix"
+title = "Blackbird"
 languageCode = "zh-hans"
 hasCJKLanguage = true
 # 版权资讯（支持 Markdown）
