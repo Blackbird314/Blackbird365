@@ -11,9 +11,7 @@ Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
-Slice 类型非常特殊，你不能在代码中声明 `[T]` 或 `str` 类型的变量。以 `str` 为例，它只能以 `&str` `&mut str` `Box<str>` `String` 等形式呈现，前两者是对 `str` 的引用，后两者包含了指向 `str` 的指针。
-
-换言之，Slice 实例不能存放到栈上，除非使用 nightly 版本并且开启名为 `unsized_locals` 的 `feature`：
+Slice 类型非常特殊，你不能在代码中声明 `[T]` 或 `str` 类型的局部变量，除非使用 nightly 版本并且开启名为 `unsized_locals` 的 `feature`：
 
 ```Rust
 #![feature(unsized_locals)]
@@ -23,7 +21,9 @@ let boxed_str: Box<str> = s.into_boxed_str();
 let ss: str = *boxed_str;
 ```
 
-对于 slice 类型 `[T]` 而言，有三种常见的切片引用：
+以 `str` 为例，它只能以 `&str` `&mut str` `String` `Box<str>` 等形式呈现，前两者是对 `str` 的引用，后两者包含了指向 `str` 的指针。
+
+对于切片类型 `[T]` 而言，有三种常见的引用：
 
 - `&[T]`：共享切片(shared slice)，是切片的不可变借用，它不拥有 `[T]` 内存对象的所有权。..为了方便，共享切片也被简称为切片..
 - `&mut [T]`：可变切片(mutable slice)，可变借用于它指向的 `[T]` 内存对象，同样没有所有权
@@ -37,7 +37,7 @@ let boxed_array: Box<[i32]> = Box::new([1, 2, 3]);
 let slice: &[i32] = &boxed_array[..];
 ```
 
-虽然 `[T]` 和 `str` 本身都是可变的（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但某些情况下是只读/不可变的，这时 Rust 编译器只允许我们使用它的不可变引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它被硬编码进可执行程序，在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 类型就不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
+`[T]` 和 `str` 类型多数情况下可变（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但某些情况下是只读/不可变的，这时 Rust 编译器只允许我们使用它的不可变引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它被硬编码进可执行程序，在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 就有一定不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
 
 切片的所有元素总是初始化过的，使用 Rust 中的安全(safe)方法或操作符来访问切片时总是会做越界检查。
 
@@ -47,21 +47,23 @@ let slice: &[i32] = &boxed_array[..];
 
 ## 动态尺寸类型 DST
 
-Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并实现了 Trait `Sized`。只有在运行时才知道尺寸的类型称为动态尺寸类型(dynamically sized type)（DST），或者非正式地称为非固定尺寸类型(unsized type)。切片和[特征对象(Trait object)](https://www.zhihu.com/question/581900340/answer/2873592812)是 DSTs 的两个例子。
+Rust 中大多数的类型都有一个在编译时就已知的固定尺寸，并据此实现了 `Sized` Trait。只有在运行时才知道尺寸的类型称为动态尺寸类型(dynamically sized type)（DST），或者非正式地称为非固定尺寸类型(unsized type)。切片和[特征对象(Trait object)](https://www.zhihu.com/question/581900340/answer/2873592812)是 DST 的两个例子。
 
-注意，这里提到的尺寸未知是对类型而言，即 DST(slice, Trait object) ..类型的尺寸..无法确定，而非变量值的尺寸。例如，`str` 类型可以是任意长度（只要不超出计算机内存的限制），但具体到一个字符串字面量 `"Hello World!"`，其长度在编译时是确定无疑且不可更改的。
+注意，这里提到的尺寸未知是对类型而言，即 DST(slice, Trait object) ..类型的尺寸..无法确定，而非变量值的尺寸。例如，`str` 类型可以是任意长度（只要不超出计算机硬件的限制），但具体到一个字符串字面量 `"Hello World!"`，其长度在编译时是确定无疑且不可更改的。
 
 固定尺寸类型的引用只需要指向内存对象的第一个字节，不需要知道内存对象的尺寸，因为 Rust 在编译时会生成包含类型信息的机器码，对每个固定尺寸类型的数据，Rust 都能知道其类型，从而确定大小。但对于动态尺寸类型，即使知道内存对象的类型(比如明确是 `str` 类型)，由于尺寸可以是任意值，仍无法确定应该引用的内存范围，因而必须使用宽指针。
 
-编译器在编译时需要计算局部变量和参数所需的内存，并相应地为每个栈帧分配空间。`[1..4]` 是切片语法，会从变量 `a` 的内存对象中截取一部分。编译器无法从切片语法中确定结果切片的大小，因此下面的代码报错：
+编译器在编译时需要计算局部变量所需的内存，并相应地为每个栈帧分配空间。`[1..4]` 是切片语法，会从变量 `a` 的内存对象中截取一部分。编译器无法从切片语法中确定结果切片的大小，因此下面的代码报错：
 
 ```Rust
 fn slice_out_of_array() {
     let a: [u8; 5] = [1, 2, 3, 4, 5];
-    let nice_slice = a[1..4]; // 报错：[u8] doesn't have a size known at compile-time
+    let nice_slice: [u8] = a[1..4]; // 报错：[u8] doesn't have a size known at compile-time
     assert_eq!([2, 3, 4], nice_slice)
 }
 ```
+
+这就是为什么 Rust 不允许声明 `[T]` 或 `str` 类型的局部变量。
 
 ## `String` 字符串
 
@@ -95,6 +97,8 @@ let x: &[u8] = &[b'a', b'b', b'c']; // &[u8; 3] 隐式转换为 &[u8]
 let stack_str: &str = str::from_utf8(x).unwrap();
 ```
 
+`from_utf8(x).unwrap()` 调用将引用类型从 `&[u8]` 转换为 `&str`。
+
 作为存储在栈上的宽指针，`String` 类型包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向堆内存，所以运行过程中它的长度可以动态改变。
 
 ![alt text](/images/str-pointer.png "s 是 String 类型，world 是 &str 类型")
@@ -119,7 +123,7 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 
 ## 总结
 
-`[T]` `str` 类型数据可以存储在以下三种位置：
+`[T]` `str` 类型的内存对象可以存储在以下三种位置：
 
 - Heap 堆：`Box<T>` `String` 类型
 - Stack 栈：如前所述
