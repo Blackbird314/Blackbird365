@@ -249,9 +249,7 @@ Move 语义等于“浅拷贝” + 原变量失效，复制栈内存并移动所
 
 ## 所有权树
 
-Rust 每个拥有所有权的容器类型(`tuple`/`array`/`vec`/`struct`/`enum`等)变量和它的成员（以及成员的成员），会形成一棵所有权树。树中任何一个成员 `A` 离开作用域或转移所有权，其全部子成员将与其保持行为一致——销毁内存对象或 Move 给新变量。
-
-当成员 `A` 所有权转移后，除非你为 `A` 重新初始化，否则 `A` 的所有父成员将失去所有权（但不属于 `A` 子成员的仍然可用）。
+每个复合类型(`tuple`/`array`/`vec`/`struct`/`enum`)变量，和它的成员（以及成员的成员）会形成一棵所有权树，其中任何一个成员 `A` 离开作用域或转移所有权，`A` 的子成员将与其保持行为一致。当成员 `A` 所有权转移后，除非为 `A` 重新初始化，否则 `A` 的所有父成员将失去所有权（但不属于 `A` 子成员的仍然可用）。
 
 ```Rust
 #[derive(Debug)]
@@ -261,14 +259,15 @@ struct Vector {
 }
 
 fn main() {
-    let v1 = Vector {
+    let mut v1 = Vector {
         x: vec![1, 2, 3, 4, 5],
         y: vec![6, 7, 8, 9, 10],
     };
     let x = v1.x;
     println!("{:?}", x);
     println!("{:?}", v1.y);
-    println!("{:?}", v1); // error: borrow of partially moved value: `v1`, partial move occurs because `v1.x` has type `Vec<i32>`, which does not implement the `Copy` trait
+    v1.x = vec![11, 12, 13, 14, 15]; // 重新初始化 v1.x，这样可以避免下一行 borrow of partially moved value: `v1` 错误
+    println!("{:?}", v1);
 }
 ```
 
