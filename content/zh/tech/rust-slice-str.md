@@ -7,7 +7,7 @@ slug = "rust-slice"
 
 ## 何为切片 Slice
 
-Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 *primitive type*[^1]，被写进 Rust `core` 库。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 UTF-8 编码的数组切片 `[u8]`。
+Rust 中，[切片(slice)](https://doc.rust-lang.org/reference/types/slice.html)属于原始数据类型 _primitive type_[^1]，被写进 Rust `core` 库。切片类型的泛型写法是 `[T]`，它是对内存中一系列 `T` 类型元素所组成序列的“视图(View)”。这里的内存，可能是堆(Heap)、栈(Stack)、只读数据区(Literals)。特别的，字符串切片 `str` 本质上就是符合 UTF-8 编码的数组切片 `[u8]`。
 
 > UTF-8(8-bit Unicode Transformation Format/Universal Character Set)是在 Unicode 标准基础上定义的一种可变长度字符编码。它可以表示 Unicode 标准中的任何字符，而且其编码中的第一个字节仍与 ASCII 兼容。
 
@@ -35,10 +35,10 @@ let ss: str = *boxed_str;
 let boxed_array: Box<[i32]> = Box::new([1, 2, 3]);
 
 // 数组形式的共享切片
-let slice: &[i32] = &boxed_array[..];
+let slice: &[i32] = &boxed_array[..]; // 同样是宽指针，区别是 slice 没有堆内存所有权
 ```
 
-`[T]` 和 `str` 类型多数情况下可变（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但某些情况下是只读/不可变的，这时 Rust 编译器只允许我们使用它的不可变引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它被硬编码进可执行程序，在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 就有一定不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
+`[T]` 和 `str` 类型多数情况下可变（不妨试着用 `Box<str>` 调用 `make_ascii_uppercase()` 验证），但某些情况下是只读/不可变的，这时 Rust 编译器只允许我们使用它的共享引用 `&[T]` `&str`。一个常见的例子是字符串字面量，它被硬编码进可执行程序，在程序运行的整个生命周期内都有效，因此绑定它的变量具有静态生命周期，换言之，绑定该字面量的变量类型实际是 `&'static str`。（这并不意味着有 `'static` 生命周期的 `str` 就有一定不可变，仍然有办法构造出具有 `'static` 生命周期的 `&mut str`）
 
 切片的所有元素总是初始化过的，使用 Rust 中的安全(safe)方法或操作符来访问切片时总是会做越界检查。
 
