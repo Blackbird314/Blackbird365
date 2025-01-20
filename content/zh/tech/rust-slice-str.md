@@ -81,12 +81,14 @@ pub struct String {
 可以看出，`String` 类型定义中的 `vec` 字段是私有的。这意味着我们不能直接创建字符串实例，只能通过封装的方法来创建。之所以保持私有，是因为并非所有 `[u8]` 字节流都符合 `UTF-8` 标准，与底层 `u8` 字节的直接交互可能会破坏字符串数据。通过这种受控访问，编译器可以确保 `String` 数据始终有效。以下是两种初始化 `String` 的方式：
 
 ```Rust
-let hello_world: &str = "hello world"; // hello_world 指向只读数据区
+fn main() {
+    let hello_world: &str = "hello world"; // hello_world 指向只读数据区
 
-let s: String = String::from(hello);
-let s: String = hello.to_string(); // 发生了变量遮蔽
+    let s: String = String::from("hello");
+    let s: String = hello_world.to_string(); // 发生了变量遮蔽
 
-let world: &str = &s[6..] // world 指向堆
+    let world: &str = &s[6..]; // world 指向堆
+}
 ```
 
 显然，`&str` 类型可以指向堆，也可以指向只读数据区，还可以指向栈：只需将分配到栈上的字节数组转换为 `&str` 类型，这时 `str` 自然是栈上的内存对象：
@@ -112,13 +114,13 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 
 ## 切片语法
 
-在 Rust 中，我们可以用切片语法 `[x..y]` 从内存中截取一串连续的同类型值，返回一个切片。`x..y` 表示 [x, y) 的数学含义。`..` 两边可以没有运算数：
+在 Rust 中，我们可以用切片语法 `[x..y]` 从内存中截取一串连续的同类型值，返回一个切片。`x..y` 表示 [x, y) 的数学含义，`..` 两边可以没有运算数：
 
 - `..y` 等价于 `0..y`
 - `x..` 等价于位置 `x` 到数据结束
 - `..` 等价于位置 `0` 到结束
 
-切片不能直接与变量绑定，所以必须在切片语法 `[x..y]` 前加上 `&` 符号，这会得到切片的引用。考虑到自动解引用，切片语法可作用于 `str` `[T]` `[T; N]` `String` `Vec<T>` 类型及其引用。
+切片不能直接与变量绑定，所以必须在切片语法 `[x..y]` 前加上 `&` 符号，这会得到切片的引用。考虑到自动解引用，切片语法可作用于 `str` `[T]` `[T; N]` `String` `Vec<T>` 类型和它们的引用。
 
 对字符串使用切片语法需要格外小心，切片的索引必须落在字符之间的边界位置，也就是 UTF-8 字符的边界，例如中文在 UTF-8 中占用三个字节，若只取只取中文字符串的前两个字节，连第一个字都取不完整，此时程序会直接崩溃退出。
 
@@ -130,7 +132,7 @@ let stack_str: &str = str::from_utf8(x).unwrap();
 - Heap 堆：`Box<T>` `String` 类型
 - 只读数据区：字符串字面量 `"hello"` 直接被硬编码进可执行程序中，运行时载入内存模型的只读数据区
 
-一图以蔽之，Rust 字符串内存模型如下：
+一图以蔽之，Rust 字符串的内存分布模型：
 
 ![alt text](/images/rust-str-model.webp)
 
