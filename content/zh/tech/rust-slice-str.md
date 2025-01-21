@@ -108,7 +108,31 @@ let stack_str: &str = str::from_utf8(x).unwrap(); // 将引用类型从 `&[u8]` 
 
 ## `Box<str>` 字符串
 
+```Rust
+fn main() {
+    let _s1: Box<str> = "hello".into();
+    let _s2: Box<&str> = Box::new("hello world");
+}
+```
+
 `Box<str>` 类型是 `Box<[T]>` 的子集，如前所述，它是一个智能指针/宽指针，`str` 被存储在堆上。不同于 `&str` 和 `&mut str`，`Box<str>` 拥有内存对象的所有权。相比 `String` 类型，`Box<str>` 缺少 `capacity` 字段，这意味着无法修改 `Box<str>` 中 `str` 的长度，只能改变 `str` 中每个字符的值。
+
+## `&str` 隐式类型转换
+
+```Rust
+fn main() {
+    let s1: Box<str> = "hello".into();
+    print_str(&s1);
+    let s2: String = "world".into();
+    print_str(&s2);
+}
+
+fn print_str(s: &str) {
+    println!("{}", s);
+}
+```
+
+上述代码中 `&s1` `&s2` 是对 `Box<str>` `String` 栈内存的引用，而非直接指向堆内存，所以 Rust 允许将 `&String` `&Box<str>` 类型隐式转换为 `&str` 类型（反之则不行）。当函数参数为 `&str` 类型时，不仅能传入 `&str` 变量，也可以传入 `&String` `&Box<str>` 变量，这样设计使代码更灵活。
 
 ## 切片语法
 
