@@ -91,22 +91,20 @@ fn main() {
 }
 ```
 
-显然，`&str` 类型可以指向堆，也可以指向只读数据区，还可以指向栈：只需将分配到栈上的字节数组转换为 `&str` 类型，这时 `str` 自然是栈上的内存对象：
+作为存储在栈上的宽指针，`String` 类型包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向堆内存，所以运行过程中它的长度可以动态改变。
+
+![alt text](/images/str-pointer.png "s 是 String 类型，world 是 &str 类型")
+
+`&str` 不仅可以指向堆和只读数据区，还可以指向栈：
 
 ```Rust
 use std::str;
 
 let x: &[u8] = &[b'a', b'b', b'c']; // &[u8; 3] 隐式转换为 &[u8]
-let stack_str: &str = str::from_utf8(x).unwrap();
+let stack_str: &str = str::from_utf8(x).unwrap(); // 将引用类型从 `&[u8]` 转换为 `&str`
 ```
 
-`from_utf8(x).unwrap()` 调用将引用类型从 `&[u8]` 转换为 `&str`。
-
-作为存储在栈上的宽指针，`String` 类型包括三部分：指针、长度和容量，相比于 `&str` 类型仅增加了一个容量字段，因为 `String` 指向堆内存，所以运行过程中它的长度可以动态改变。
-
-![alt text](/images/str-pointer.png "s 是 String 类型，world 是 &str 类型")
-
-`&String` 类型还可以被隐式的转换为 `&str` 类型，因此当函数参数为 `&str` 类型时，不仅能传入 `&str` 变量，也可以传入 `&String` 变量，这样的函数使用更加灵活。
+只需将分配到栈上的字节数组转换为 `&str` 类型，这时 `str` 自然是栈上的内存对象。
 
 ## `Box<str>` 字符串
 
