@@ -233,28 +233,29 @@ fn main() {
 
 ```Rust
 struct I(i32);
+struct X;
 
-struct X1;
-impl From<&mut I> for X1 {
-    fn from(p: &mut I) -> X1 {
+impl From<&mut I> for X {
+    fn from(p: &mut I) -> X {
         p.0 = 1;
-        X1
+        X
     }
 }
+
 // 必须引入这个中间函数
-fn x1(p: &mut I) -> X1 {
-    X1::from(p)
+fn x_from(p: &mut I) -> X {
+    X::from(p)
 }
 
 // value used here after move
 fn from_twice_fail(p: &mut I) {
-    let x11 = X1::from(p); // 此处不会自动重借用, 导致 Move p
-    let x12 = X1::from(p); // 编译失败
+    let _x1 = X::from(p); // 此处不会自动重借用, 导致 Move p
+    let _x2 = X::from(p); // 编译失败
 }
 
 fn from_twice(p: &mut I) {
-    let x11 = x1(p); // 隐式重借用
-    let x12 = x1(p); // 编译通过
+    let _x1 = x_from(p); // 隐式重借用
+    let _x2 = x_from(p); // 编译通过
 }
 ```
 
