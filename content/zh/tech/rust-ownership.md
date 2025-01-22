@@ -162,19 +162,19 @@ Rust 默认实现 `Copy` Trait 的类型，包括但不限于：
 - 元组，当且仅当其包含的类型也都实现 `Copy` 的时候。比如 `(i32, i32)` 是 `Copy` 的，但 `(i32, String)` 不是
 - 共享指针类型 `*const T` 或共享引用类型 `&T`（无论 T 是否实现 `Copy`）
 
-对于那些没有实现 `Copy` Trait 的自定义类型，可以通过 `#[derive]` 手动派生实现(必须同时派生 `Clone` Trait)，方式很简单：
+`Copy` Trait 是一个没有任何可重写方法的标记 marker Trait，它只是告诉编译器“可以对这个类型执行按位复制”。因此，程序员无法自定义 `Copy` 的实现逻辑，对于需要实现 `Copy` 的自定义类型，通常通过 `#[derive]` 派生实现(必须同时派生 `Clone` Trait)：
 
 ```Rust
 #[derive(Copy, Clone)]
 struct MyStruct(i32, i32);
 ```
 
-你也可以手动实现：
+也可以通过 `impl` 关键字实现：
 
 ```Rust
 struct MyStruct;
 
-impl Copy for MyStruct { }
+impl Copy for MyStruct {}
 
 impl Clone for MyStruct {
     fn clone(&self) -> MyStruct {
@@ -183,7 +183,7 @@ impl Clone for MyStruct {
 }
 ```
 
-注意，只有当某类型的所有成员都实现了 `Copy`，该类型才能实现 `Copy`。“成员(Member)”的含义取决于类型，例如：结构体的字段、枚举的变量、数组的元素、元组的项，等等。
+注意，以上两种实现方式完全等价，且只有当某类型的所有成员都实现了 `Copy`，它才能实现 `Copy`。“成员(Member)”的含义取决于类型，例如：结构体的字段、枚举的变量、数组的元素、元组的项，等等。
 
 Rust 标准库文档提到[^2]，一般来说，如果你的类型可以实现 `Copy`，它就应该实现。但实现 `Copy` 是你的类型公共 API 的一部分。如果该类型可能在未来变成非 `Copy`，那么现在省略 `Copy` 的实现可能会是明智的选择，以避免 API 的破坏性改变。
 
@@ -239,7 +239,7 @@ let s2 = s1.clone();
 println!("{},{}", s1, s2);
 ```
 
-`Copy` 的细节被封装在编译器内，无法自行定制和实现，不可重载；而 `Clone` 可由开发者自行实现。所以调用 `Clone` 的默认实现时，操作的性能往往不高，但你可以实现自己的克隆逻辑，来改进这一点。比如 `Rc`，它的 `clone()` 用于增加引用计数，同时只拷贝少量数据，效率并不低。
+当调用 `Clone` 的默认实现时，操作的性能往往不高，但开发者可以自定义 `Clone` 的实现逻辑，比如 `Rc` 的 `clone()` 用于增加引用计数，同时只拷贝少量数据，效率并不低。
 
 ### 小结
 
