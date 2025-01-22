@@ -47,7 +47,7 @@ Rust 存在三条基本的借用规则：
 fn main() {
     let mut x = 0;
     let y = &mut x; // y 可变借用于 x
-    if x == 0 { // 报错：存在 x 的可变引用 y，此时不能通过原变量 x 读取值（也不可写入值）
+    if x == 0 { // 报错：不能通过原变量 x 读取或写入内存对象，因为此时存在 x 的可变引用 y
         *y += 1; // y 的作用域到此结束
         println!("{}", x); // x 可以正常读取
     }
@@ -66,36 +66,38 @@ struct MyType<T> {
 fn main() {
     let num1 = 1;
     let num1_ref = &num1;
-    // i32 类型实现了 Copy，因此 i32 类型的影子变量会进行 Copy 操作，这不会影响本体的所有权
-    let num2 = *num1_ref;
+    let num2 = *num1_ref; // i32 实现了 Copy，因此影子变量 *num1_ref 会进行 Copy 操作，这不会影响本体的所有权
+    
     let x = MyType{val: 1};
     let y = &x;
-    // 这里报错，因为无法通过解引用得到的影子变量移动所有权
-    let z = *y;
+    let z = *y; // MyType<i32> 没有实现 Copy，不能通过影子变量 *y 移动所有权，编译报错
 }
 ```
 
 ## 引用类型的所有权
 
-Rust 中所有的值都有所有权，引用类型的值也不例外。引用不拥有指向对象的所有权，但引用变量拥有自身地址值的所有权。参考下面这段代码：
+Rust 中所有的值都有所有权，引用类型的值也不例外。引用不拥有指向对象的所有权，但引用变量拥有自身地址值的所有权：
 
 ```Rust
 fn main() {
     let mut s = String::from("value");
     let r = &mut s; // r 是 s 的可变引用
-    let r1 = r; // move 而非 copy
-    println!("{}", r); // 报错 borrow of moved value: `r`
+    let _r1 = r; // move 而非 copy
+    let _r2 = r; // 报错：use of moved value: `r`
 }
 ```
 
-上文提到，共享引用实现了 `Copy`，自然也实现了 `Clone`，而下面的结构体 `Person` 没有实现 `Clone`，因此 `b.clone()` 只能复制引用 `b`，不能复制引用指向的内存对象。虽然这能通过编译，但 clippy 不建议我们这样做，因为它的行为相当于 `Copy` 操作，很可能不是我们希望的克隆效果。
+我们知道，共享引用实现了 `Copy`，自然也实现了 `Clone`，而下面的结构体 `Person` 没有实现 `Clone`，因此 `b.clone()` 只能复制引用 `b`，不能复制引用指向的内存对象。虽然这能通过编译，但 clippy 不建议我们这样做，因为它的行为相当于 `Copy` 操作，很可能不是我们希望的克隆效果。
 
 ```Rust
 struct Person;
 
-let a = Person;
-let b = &a;
-let c = b.clone();  // c 的类型是 &Person
+fn main() {
+    let a = Person;
+    let b = &a;
+    // 警告：the type `Person` does not implement `Clone`, so calling `clone` on `&Person` copies the reference, which does not do anything and can be removed
+    let _c: &Person = b.clone();
+}
 ```
 
 但如果为结构体 `Person` 实现 `Clone`，再去 `clone()` 引用类型，将没有错误提示：
@@ -104,17 +106,14 @@ let c = b.clone();  // c 的类型是 &Person
 #[derive(Clone)]
 struct Person;
 
-let a = Person;
-let b = &a;
-let c = b.clone();  // 此时 c 的类型是 Person，而不是 &Person
+fn main() {
+    let a = Person;
+    let b = &a;
+    let _c: Person = b.clone(); // 此时 _c 的类型是 Person，而不是 &Person
+}
 ```
 
-前后两个示例的区别，仅在于引用所指向的类型 `Person` 有没有实现 `Clone`。所以得出结论：
-
-- 没有实现 `Clone` 时，引用类型的 `clone()` 将等价于 Copy
-- 实现了 `Clone` 时，引用类型的 `clone()` 将克隆并得到引用所指向的类型
-
-这是因为，方法调用时会先查找与调用者类型匹配的方法，查找过程具有优先级，找到即停。由于 `.` 操作可以自动引用/解引用，如果引用/解引用前后的两种类型都实现了同一方法(如 `clone()`)，Rust 编译器将按照查找顺序来决定调用哪个类型上的方法。[^1]
+前后两个示例的区别，仅在于引用所指向的类型 `Person` 有没有实现 `Clone`。原因在于，方法调用时会先查找与调用者类型匹配的方法，查找过程具有优先级，找到即停。由于 `.` 操作可以自动引用/解引用，如果引用/解引用前后的两种类型都实现了同一方法(如 `clone()`)，Rust 编译器将按照查找顺序来决定调用哪个类型上的方法。[^1]
 
 如果 `b` 是没有实现 `Copy` 和 `Clone` 的可变引用，`b.clone()` 只能得到 `Person` 类型（前提是 `Person` 实现了 `Clone`）。
 
