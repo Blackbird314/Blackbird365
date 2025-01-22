@@ -151,15 +151,15 @@ println!("{}", r1); // r1 的作用域到此结束
 struct A(i32,i32);
 impl A {
     fn foo(&mut self) {
-        let a = &self.0;
-        self.bar();
+        let a = &self.0; // 相当于 let a = &(*self).0;
+        self.bar(); // 相当于 bar(&mut *self);
         a;
     }
     fn bar(&mut self) {}
 }
 ```
 
-上述代码会报错，`a` 是 `self.0` 的不可变重借用。根据规则，不可变重借用的有效期内不能由原始引用重借用出可变引用，这里调用的 `self.bar()` 是对 `self` 整体的可变重借用，包括了第一个元素这条路径，所以编译失败。假如把 `bar` 改成 `fn bar(&self)` 则编译成功。
+上述代码会报错，`self.0` 是 `self` 的不可变重借用，而 `self.bar()` 是对 `self` 的可变重借用，包括了第一个元素这条路径，所以编译失败。假如把 `bar()` 签名改成 `fn bar(&self)` 则编译成功。
 
 ### 隐式重借用
 
@@ -179,18 +179,18 @@ let r1 = &mut s;
 println!("{}", r1);
 ```
 
-你可能会好奇，明明传入方法的是引用类型，为什么前两条报错信息中会显示 `*r1`？这是因为自动发生了隐式重借用，`r1.len()` 实际上是 `String::len(&*r1)`，同理 `r1.push('3')` 实际上是 `String::push(&mut *r1, '3')`。
+你可能会好奇，明明传入方法的是引用类型，为什么报错信息中会显示 `*r1`？这是因为自动发生了隐式重借用，`r1.len()` 实际上是 `String::len(&*r1)`，同理 `r1.push('3')` 实际上是 `String::push(&mut *r1, '3')`。
 
-隐式重借用并非多此一举，`len()` 和 `push()` 的方法签名分别是 `pub fn len(&self) -> usize` 和 `pub fn push(&mut self, ch: char)`。没有隐式重借用，可变引用 `r1` 将无法调用 `len()`，而 `r1.push('3')` 会转移可变引用 `r1` 的所有权，导致 `r1` 之后无法使用。
+隐式重借用并非多此一举，`len()` 和 `push()` 的方法签名分别是 `pub fn len(&self) -> usize` 和 `pub fn push(&mut self, ch: char)`。没有隐式重借用，可变引用 `r1` 将无法直接调用 `len()`，而 `r1.push('3')` 调用会转移可变引用 `r1` 的所有权，导致 `r1` 之后无法使用。
 
-事实上，隐式重借用几乎无处不在：
+实际上，隐式重借用几乎无处不在：
 
 ```Rust
 let mut s = String::from("ABC");
 let r1 = &mut s;
 // 不标注 r2 的类型，会 Move 而非隐式重借用，之后 r1 失效
 let r2 = r1;
-// 手动标注 r2 的类型，会进行非隐式重借用，函数传参同理
+// 手动标注 r2 的类型，会进行隐式重借用，函数传参同理
 let r3: &mut String = r2; // 相当于 let r3: &mut String = &mut *r2;
 println!("{:?}", r3);
 println!("{:?}", r2); // 打印 r3 r2 的顺序不能颠倒
@@ -211,21 +211,24 @@ impl From<&mut i32> for X {
     }
 }
 
-let mut i = 4;
-let r = &mut i;
-
 fn from_auto_reborrow<'a, F, T: From<&'a mut F>>(f: &'a mut F) -> T {
     T::from(f)
 }
-let x: X = from_auto_reborrow(r); // 隐式重借用
-let x: X = from_auto_reborrow(r); // 隐式重借用
 
 fn from<F, T: From<F>>(f: F) -> T {
     T::from(f)
 }
-let x: X = from(&mut *r); // 显式重借用以避免 Move r
-let x: X = from(r); // 不会进行隐式重借用, 导致 Move r
-let x: X = from(r); // 编译失败
+
+fn main() {
+    let mut i = 4;
+    let r = &mut i;
+
+    let _x: X = from_auto_reborrow(r); // 隐式重借用
+
+    let _x: X = from(&mut *r); // 显式重借用以避免 Move r
+    let _x: X = from(r); // 不会进行隐式重借用, 导致 Move r
+    let _x: X = from(r); // 编译失败
+}
 ```
 
 ```Rust
