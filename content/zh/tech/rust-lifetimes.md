@@ -5,6 +5,6 @@ tags = ["Rust"]
 slug = "rust-lifetimes"
 +++
 
-# 什么是生命周期
+# 生命周期
 
 
