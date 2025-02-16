@@ -67,7 +67,7 @@ fn main() {
     let num1 = 1;
     let num1_ref = &num1;
     let num2 = *num1_ref; // i32 实现了 Copy，因此影子变量 *num1_ref 会进行 Copy 操作，这不会影响本体的所有权
-    
+
     let x = MyType{val: 1};
     let y = &x;
     let z = *y; // MyType<i32> 没有实现 Copy，不能通过影子变量 *y 移动所有权，编译报错
